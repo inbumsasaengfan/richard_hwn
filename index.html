@@ -349,8 +349,10 @@
     }
   }
 
+  document.addEventListener('DOMContentLoaded', function() {
   fetchPrices();
   setInterval(fetchPrices, 60000);
+});
 </script>
 
   <!-- 거래소 레퍼럴 -->
