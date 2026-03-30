@@ -301,24 +301,56 @@
     <div class="tagline">READ THE CHART · FIND THE GEM · STAY AHEAD</div>
   </div>
 
-  <!-- Ticker -->
+<!-- Ticker -->
   <div class="ticker">
-    <div class="ticker-inner">
-      <span class="ticker-item">BTC <span class="up">▲ +2.4%</span></span>
-      <span class="ticker-item">ETH <span class="up">▲ +1.8%</span></span>
-      <span class="ticker-item">SOL <span class="down">▼ -0.6%</span></span>
-      <span class="ticker-item">BNB <span class="up">▲ +0.9%</span></span>
-      <span class="ticker-item">XRP <span class="up">▲ +3.1%</span></span>
-      <span class="ticker-item">BASED <span class="up">▲ NEW</span></span>
-      <!-- 반복 -->
-      <span class="ticker-item">BTC <span class="up">▲ +2.4%</span></span>
-      <span class="ticker-item">ETH <span class="up">▲ +1.8%</span></span>
-      <span class="ticker-item">SOL <span class="down">▼ -0.6%</span></span>
-      <span class="ticker-item">BNB <span class="up">▲ +0.9%</span></span>
-      <span class="ticker-item">XRP <span class="up">▲ +3.1%</span></span>
-      <span class="ticker-item">BASED <span class="up">▲ NEW</span></span>
+    <div class="ticker-inner" id="ticker-inner">
+      <span class="ticker-item">로딩중...</span>
     </div>
   </div>
+
+  <script>
+    const coins = [
+      { id: 'bitcoin', symbol: 'BTC' },
+      { id: 'ethereum', symbol: 'ETH' },
+      { id: 'tether', symbol: 'USDT' },
+      { id: 'solana', symbol: 'SOL' },
+      { id: 'ripple', symbol: 'XRP' },
+      { id: 'dogecoin', symbol: 'DOGE' },
+      { id: 'binancecoin', symbol: 'BNB' },
+      { id: 'tron', symbol: 'TRX' },
+      { id: 'hyperliquid', symbol: 'HYPE' },
+    ];
+
+    async function fetchPrices() {
+      try {
+        const ids = coins.map(c => c.id).join(',');
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`);
+        const data = await res.json();
+
+        let html = '';
+        coins.forEach(coin => {
+          const price = data[coin.id]?.usd;
+          const change = data[coin.id]?.usd_24h_change;
+          if (!price) return;
+          const changeFixed = change?.toFixed(2);
+          const isUp = change >= 0;
+          const arrow = isUp ? '▲' : '▼';
+          const cls = isUp ? 'up' : 'down';
+          const priceStr = price < 1 ? price.toFixed(4) : price.toLocaleString();
+          html += `<span class="ticker-item">${coin.symbol} $${priceStr} <span class="${cls}">${arrow} ${Math.abs(changeFixed)}%</span></span>`;
+        });
+
+        // 두 번 반복 (무한 스크롤용)
+        const doubled = html + html;
+        document.getElementById('ticker-inner').innerHTML = doubled;
+      } catch(e) {
+        console.error('가격 불러오기 실패', e);
+      }
+    }
+
+    fetchPrices();
+    setInterval(fetchPrices, 60000); // 60초마다 갱신
+  </script>
 
   <!-- 거래소 레퍼럴 -->
   <div class="section">
