@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEPHCON</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0C96B;
+    --gold-dim: rgba(201,168,76,0.15);
+    --bg: #0A0A0A;
+    --surface: #111111;
+    --surface2: #181818;
+    --border: rgba(201,168,76,0.2);
+    --text: #E8E8E8;
+    --text-dim: #888;
+    --red: #E05252;
+    --green: #52C78A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Radial glow */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .logo-mark {
+    display: inline-block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px;
+    letter-spacing: 0.12em;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(201,168,76,0.3);
+    position: relative;
+  }
+
+  .logo-mark::after {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin-top: 8px;
+  }
+
+  .tagline {
+    margin-top: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* Section label */
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Card */
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    text-decoration: none;
+    color: var(--text);
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .card:hover {
+    background: var(--surface2);
+    border-color: var(--gold);
+    transform: translateX(4px);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    background: var(--gold-dim);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .card-info { flex: 1; }
+
+  .card-name {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 3px;
+  }
+
+  .card-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .card-arrow {
+    color: var(--gold);
+    font-size: 16px;
+    opacity: 0.5;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+
+  .card:hover .card-arrow {
+    opacity: 1;
+    transform: translateX(3px);
+  }
+
+  /* Badge for events */
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    padding: 3px 7px;
+    border-radius: 2px;
+    font-weight: 700;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  .badge-live {
+    background: rgba(82,199,138,0.15);
+    color: var(--green);
+    border: 1px solid rgba(82,199,138,0.3);
+  }
+
+  .badge-hot {
+    background: rgba(224,82,82,0.15);
+    color: var(--red);
+    border: 1px solid rgba(224,82,82,0.3);
+  }
+
+  .badge-new {
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 1px solid var(--border);
+  }
+
+  /* Section spacing */
+  .section { margin-bottom: 48px; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .footer span { color: var(--gold); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.10s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.20s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+
+  .section:nth-child(2) .section-label { animation-delay: 0.1s; }
+  .section:nth-child(3) .section-label { animation-delay: 0.15s; }
+  .section:nth-child(4) .section-label { animation-delay: 0.2s; }
+
+  /* Ticker tape */
+  .ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    overflow: hidden;
+    margin-bottom: 48px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 0;
+  }
+
+  .ticker-inner {
+    display: inline-flex;
+    gap: 40px;
+    white-space: nowrap;
+    animation: ticker 20s linear infinite;
+  }
+
+  .ticker-item { display: flex; align-items: center; gap: 8px; }
+  .ticker-item .up { color: var(--green); }
+  .ticker-item .down { color: var(--red); }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-mark">NEPHCON</div>
+    <div class="tagline">Crypto Intelligence · Trading · Research</div>
+  </div>
+
+  <!-- Ticker -->
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span class="ticker-item">BTC <span class="up">▲ +2.4%</span></span>
+      <span class="ticker-item">ETH <span class="up">▲ +1.8%</span></span>
+      <span class="ticker-item">SOL <span class="down">▼ -0.6%</span></span>
+      <span class="ticker-item">BNB <span class="up">▲ +0.9%</span></span>
+      <span class="ticker-item">XRP <span class="up">▲ +3.1%</span></span>
+      <span class="ticker-item">BASED <span class="up">▲ NEW</span></span>
+      <!-- 반복 -->
+      <span class="ticker-item">BTC <span class="up">▲ +2.4%</span></span>
+      <span class="ticker-item">ETH <span class="up">▲ +1.8%</span></span>
+      <span class="ticker-item">SOL <span class="down">▼ -0.6%</span></span>
+      <span class="ticker-item">BNB <span class="up">▲ +0.9%</span></span>
+      <span class="ticker-item">XRP <span class="up">▲ +3.1%</span></span>
+      <span class="ticker-item">BASED <span class="up">▲ NEW</span></span>
+    </div>
+  </div>
+
+  <!-- 거래소 레퍼럴 -->
+  <div class="section">
+    <div class="section-label">거래소 레퍼럴</div>
+
+    <a href="#" class="card" target="_blank" rel="noopener">
+      <div class="card-icon">🟡</div>
+      <div class="card-info">
+        <div class="card-name">Bybit</div>
+        <div class="card-desc">레퍼럴 링크 · 수수료 할인</div>
+      </div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="#" class="card" target="_blank" rel="noopener">
+      <div class="card-icon">🔵</div>
+      <div class="card-info">
+        <div class="card-name">OKX</div>
+        <div class="card-desc">레퍼럴 링크 · 수수료 할인</div>
+      </div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="#" class="card" target="_blank" rel="noopener">
+      <div class="card-icon">🟠</div>
+      <div class="card-info">
+        <div class="card-name">Binance</div>
+        <div class="card-desc">레퍼럴 링크 · 수수료 할인</div>
+      </div>
+      <span class="card-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- 이벤트 / 대회 -->
+  <div class="section">
+    <div class="section-label">이벤트 · 대회</div>
+
+    <a href="https://www.bybit.com/en/trading-contest/game/?name=141155Apr&period_id=3351" class="card" target="_blank" rel="noopener">
+      <div class="card-icon">🏆</div>
+      <div class="card-info">
+        <div class="card-name">RICHARD X PINK — Bybit 4월 대회</div>
+        <div class="card-desc">3/31 ~ 4/29 · 최대 $50,000 · 수익률 & 거래량</div>
+      </div>
+      <span class="badge badge-live">LIVE</span>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <!-- 대회 추가 시 여기에 복붙 -->
+  </div>
+
+  <!-- 네프콘 채널 -->
+  <div class="section">
+    <div class="section-label">네프콘 채널</div>
+
+    <a href="#" class="card" target="_blank" rel="noopener">
+      <div class="card-icon">📡</div>
+      <div class="card-info">
+        <div class="card-name">Telegram — 네프콘</div>
+        <div class="card-desc">공식 텔레그램 채널</div>
+      </div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="#" class="card" target="_blank" rel="noopener">
+      <div class="card-icon">▶️</div>
+      <div class="card-info">
+        <div class="card-name">YouTube</div>
+        <div class="card-desc">분석 영상 · 시장 리뷰</div>
+      </div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="#" class="card" target="_blank" rel="noopener">
+      <div class="card-icon">𝕏</div>
+      <div class="card-info">
+        <div class="card-name">Twitter / X</div>
+        <div class="card-desc">실시간 마켓 코멘터리</div>
+      </div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="#" class="card" target="_blank" rel="noopener">
+      <div class="card-icon">📸</div>
+      <div class="card-info">
+        <div class="card-name">Instagram</div>
+        <div class="card-desc">콘텐츠 · 업데이트</div>
+      </div>
+      <span class="card-arrow">→</span>
+    </a>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>NEPHCON</span> · 본 페이지의 정보는 투자 권유가 아닙니다.<br>
+    모든 투자 결정은 본인의 판단과 책임 하에 이루어져야 합니다.
+  </div>
+
+</div>
+</body>
+</html>
