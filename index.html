@@ -341,13 +341,37 @@
   }
 
   let isExpanded = false;
-  let top5 = [];
-  let top10 = [];
+  let currentGainerTab = '24h';
+  let gainersData = { '24h': [], '7d': [], '30d': [] };
+
+  function switchGainerTab(tab) {
+    currentGainerTab = tab;
+    isExpanded = false;
+    ['24h', '7d', '30d'].forEach(t => {
+      const btn = document.getElementById('tab-' + t);
+      if (t === tab) {
+        btn.style.background = 'rgba(201,168,76,0.15)';
+        btn.style.color = '#C9A84C';
+        btn.style.borderColor = 'rgba(201,168,76,0.5)';
+      } else {
+        btn.style.background = 'transparent';
+        btn.style.color = '#888';
+        btn.style.borderColor = 'rgba(255,255,255,0.1)';
+      }
+    });
+    renderGainers(gainersData[tab].slice(0, 5));
+  }
 
   function renderGainers(list) {
+    const tab = currentGainerTab;
+    const full = gainersData[tab];
     let html = '';
     list.forEach((coin, i) => {
-      const change = coin.price_change_percentage_24h?.toFixed(2);
+      let change;
+      if (tab === '24h') change = coin.price_change_percentage_24h?.toFixed(2);
+      else if (tab === '7d') change = coin.price_change_percentage_7d_in_currency?.toFixed(2);
+      else change = coin.price_change_percentage_30d_in_currency?.toFixed(2);
+
       const price = coin.current_price < 1 ? coin.current_price.toFixed(4) : coin.current_price.toLocaleString();
       const isUp = change >= 0;
       const cls = isUp ? 'up' : 'down';
@@ -372,31 +396,38 @@
 
   function toggleGainers() {
     isExpanded = !isExpanded;
-    renderGainers(isExpanded ? top10 : top5);
+    const tab = currentGainerTab;
+    renderGainers(isExpanded ? gainersData[tab].slice(0, 10) : gainersData[tab].slice(0, 5));
   }
 
   async function fetchGainers() {
     try {
-      const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=percent_change_24h_desc&per_page=200&page=1&sparkline=false&price_change_percentage=24h');
+      const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=200&page=1&sparkline=false&price_change_percentage=24h,7d,30d');
       const data = await res.json();
-      const sorted = data.sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
-      top10 = sorted.slice(0, 10);
-      top5 = sorted.slice(0, 5);
-      renderGainers(isExpanded ? top10 : top5);
+
+      gainersData['24h'] = [...data].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h).slice(0, 10);
+      gainersData['7d'] = [...data].sort((a, b) => b.price_change_percentage_7d_in_currency - a.price_change_percentage_7d_in_currency).slice(0, 10);
+      gainersData['30d'] = [...data].sort((a, b) => b.price_change_percentage_30d_in_currency - a.price_change_percentage_30d_in_currency).slice(0, 10);
+
+      renderGainers(gainersData[currentGainerTab].slice(0, 5));
     } catch(e) {
       console.error('상승률 불러오기 실패', e);
     }
   }
-  
-  fetchPrices();
-  setInterval(fetchPrices, 60000);
+
   fetchGainers();
   setInterval(fetchGainers, 60000);
+
 </script>
   
 <!-- 상승률 순위 -->
   <div class="section">
-    <div class="section-label">Top Gainers · 24h</div>
+    <div class="section-label">Top Gainers</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button id="tab-24h" onclick="switchGainerTab('24h')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(201,168,76,0.5);background:rgba(201,168,76,0.15);color:#C9A84C;cursor:pointer;">24H</button>
+      <button id="tab-7d" onclick="switchGainerTab('7d')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#888;cursor:pointer;">7D</button>
+      <button id="tab-30d" onclick="switchGainerTab('30d')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#888;cursor:pointer;">30D</button>
+    </div>
     <div id="gainers-list">
       <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
     </div>
