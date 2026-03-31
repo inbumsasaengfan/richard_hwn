@@ -390,19 +390,19 @@
 
 async function fetchKimchi() {
     try {
-      const [upbitBtcRes, upbitUsdtRes, binanceRes] = await Promise.all([
+      const [upbitRes, binanceRes, fxRes] = await Promise.all([
         fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC'),
-        fetch('https://api.upbit.com/v1/ticker?markets=KRW-USDT'),
-        fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT')
+        fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'),
+        fetch('https://api.exchangerate-api.com/v4/latest/USD')
       ]);
-      const upbitBtcData = await upbitBtcRes.json();
-      const upbitUsdtData = await upbitUsdtRes.json();
+      const upbitData = await upbitRes.json();
       const binanceData = await binanceRes.json();
+      const fxData = await fxRes.json();
 
-      const upbitPrice = upbitBtcData[0].trade_price;
-      const usdtKrw = upbitUsdtData[0].trade_price;
+      const upbitPrice = upbitData[0].trade_price;
       const binancePrice = parseFloat(binanceData.price);
-      const binanceKrw = binancePrice * usdtKrw;
+      const usdKrw = fxData.rates.KRW;
+      const binanceKrw = binancePrice * usdKrw;
       const premium = ((upbitPrice - binanceKrw) / binanceKrw * 100).toFixed(2);
       const isPos = premium >= 0;
 
