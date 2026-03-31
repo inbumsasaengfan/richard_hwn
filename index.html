@@ -355,6 +355,8 @@ async function fetchGainers() {
 const top5 = sorted.slice(0, 5);
 
 let isExpanded = false;
+let top5 = [];
+let top10 = [];
 
 function renderGainers(list) {
   let html = '';
@@ -387,18 +389,21 @@ function toggleGainers() {
   renderGainers(isExpanded ? top10 : top5);
 }
 
-renderGainers(top5);
-        
-      } catch(e) {
-        console.error('상승률 불러오기 실패', e);
-      }
-    }
+async function fetchGainers() {
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=percent_change_24h_desc&per_page=200&page=1&sparkline=false&price_change_percentage=24h');
+    const data = await res.json();
+    const sorted = data.sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
+    top10 = sorted.slice(0, 10);
+    top5 = sorted.slice(0, 5);
+    renderGainers(isExpanded ? top10 : top5);
+  } catch(e) {
+    console.error('상승률 불러오기 실패', e);
+  }
+}
 
-    fetchGainers();
-    setInterval(fetchGainers, 60000);
-  
-fetchPrices();
-setInterval(fetchPrices, 60000);
+fetchGainers();
+setInterval(fetchGainers, 60000);
 </script>
 
 <!-- 상승률 순위 -->
