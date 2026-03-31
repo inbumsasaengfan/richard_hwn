@@ -387,61 +387,12 @@
       console.error('상승률 불러오기 실패', e);
     }
   }
-
-async function fetchKimchi() {
-    try {
-      const [upbitRes, binanceRes, fxRes] = await Promise.all([
-        fetch('https://api.upbit.com/v1/ticker?markets=KRW-BTC'),
-        fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'),
-        fetch('https://api.exchangerate-api.com/v4/latest/USD')
-      ]);
-      const upbitData = await upbitRes.json();
-      const binanceData = await binanceRes.json();
-      const fxData = await fxRes.json();
-
-      const upbitPrice = upbitData[0].trade_price;
-      const binancePrice = parseFloat(binanceData.price);
-      const usdKrw = fxData.rates.KRW;
-      const binanceKrw = binancePrice * usdKrw;
-      const premium = ((upbitPrice - binanceKrw) / binanceKrw * 100).toFixed(2);
-      const isPos = premium >= 0;
-
-      document.getElementById('kimchi-upbit').textContent = upbitPrice.toLocaleString() + ' ₩';
-      document.getElementById('kimchi-binance').textContent = '$' + binancePrice.toLocaleString();
-      document.getElementById('kimchi-premium').textContent = (isPos ? '+' : '') + premium + '%';
-      document.getElementById('kimchi-premium').style.color = isPos ? '#52C78A' : '#E05252';
-    } catch(e) {
-      console.error('김치프리미엄 불러오기 실패', e);
-    }
-  }
-
-  fetchKimchi();
-  setInterval(fetchKimchi, 60000);
   
   fetchPrices();
   setInterval(fetchPrices, 60000);
   fetchGainers();
   setInterval(fetchGainers, 60000);
 </script>
-
-<!-- 김치프리미엄 -->
-  <div class="section">
-    <div class="section-label">Kimchi Premium</div>
-    <div id="kimchi-widget" style="display:flex;gap:12px;flex-wrap:wrap;">
-      <div style="flex:1;min-width:140px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;text-align:center;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;">UPBIT (KRW)</div>
-        <div id="kimchi-upbit" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--text);">--</div>
-      </div>
-      <div style="flex:1;min-width:140px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;text-align:center;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;">BINANCE (USD)</div>
-        <div id="kimchi-binance" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--text);">--</div>
-      </div>
-      <div style="flex:1;min-width:140px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;text-align:center;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;">PREMIUM</div>
-        <div id="kimchi-premium" style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--gold);">--</div>
-      </div>
-    </div>
-  </div>
   
 <!-- 상승률 순위 -->
   <div class="section">
