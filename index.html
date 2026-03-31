@@ -346,10 +346,51 @@
     }
   }
 
+async function fetchGainers() {
+      try {
+        const res = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=percent_change_24h_desc&per_page=200&page=1&sparkline=false&price_change_percentage=24h');
+        const data = await res.json();
+        const sorted = data.sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
+        const top10 = sorted.slice(0, 10);
+        let html = '';
+        top10.forEach((coin, i) => {
+          const change = coin.price_change_percentage_24h?.toFixed(2);
+          const price = coin.current_price < 1 ? coin.current_price.toFixed(4) : coin.current_price.toLocaleString();
+          const isUp = change >= 0;
+          const cls = isUp ? 'up' : 'down';
+          const arrow = isUp ? '▲' : '▼';
+          html += `
+            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);width:20px;">${i + 1}</div>
+              <img src="${coin.image}" style="width:24px;height:24px;border-radius:50%;">
+              <div style="flex:1;">
+                <div style="font-size:14px;font-weight:700;">${coin.symbol.toUpperCase()}</div>
+                <div style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">$${price}</div>
+              </div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:13px;" class="${cls}">${arrow} ${Math.abs(change)}%</div>
+            </div>`;
+        });
+        document.getElementById('gainers-list').innerHTML = html;
+      } catch(e) {
+        console.error('상승률 불러오기 실패', e);
+      }
+    }
+
+    fetchGainers();
+    setInterval(fetchGainers, 60000);
+  
 fetchPrices();
 setInterval(fetchPrices, 60000);
 </script>
 
+<!-- 상승률 순위 -->
+  <div class="section">
+    <div class="section-label">Top Gainers · 24h</div>
+    <div id="gainers-list">
+      <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
+    </div>
+  </div>
+  
   <!-- 거래소 레퍼럴 -->
   <div class="section">
     <div class="section-label">Exchange Referral</div>
