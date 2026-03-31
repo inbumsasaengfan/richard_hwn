@@ -352,25 +352,43 @@ async function fetchGainers() {
         const data = await res.json();
         const sorted = data.sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h);
         const top10 = sorted.slice(0, 10);
-        let html = '';
-        top10.forEach((coin, i) => {
-          const change = coin.price_change_percentage_24h?.toFixed(2);
-          const price = coin.current_price < 1 ? coin.current_price.toFixed(4) : coin.current_price.toLocaleString();
-          const isUp = change >= 0;
-          const cls = isUp ? 'up' : 'down';
-          const arrow = isUp ? '▲' : '▼';
-          html += `
-            <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">
-              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);width:20px;">${i + 1}</div>
-              <img src="${coin.image}" style="width:24px;height:24px;border-radius:50%;">
-              <div style="flex:1;">
-                <div style="font-size:14px;font-weight:700;">${coin.symbol.toUpperCase()}</div>
-                <div style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">$${price}</div>
-              </div>
-              <div style="font-family:'JetBrains Mono',monospace;font-size:13px;" class="${cls}">${arrow} ${Math.abs(change)}%</div>
-            </div>`;
-        });
-        document.getElementById('gainers-list').innerHTML = html;
+const top5 = sorted.slice(0, 5);
+
+let isExpanded = false;
+
+function renderGainers(list) {
+  let html = '';
+  list.forEach((coin, i) => {
+    const change = coin.price_change_percentage_24h?.toFixed(2);
+    const price = coin.current_price < 1 ? coin.current_price.toFixed(4) : coin.current_price.toLocaleString();
+    const isUp = change >= 0;
+    const cls = isUp ? 'up' : 'down';
+    const arrow = isUp ? '▲' : '▼';
+    html += `
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);width:20px;">${i + 1}</div>
+        <img src="${coin.image}" style="width:24px;height:24px;border-radius:50%;">
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:700;">${coin.symbol.toUpperCase()}</div>
+          <div style="font-size:11px;color:var(--text-dim);font-family:'JetBrains Mono',monospace;">$${price}</div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;" class="${cls}">${arrow} ${Math.abs(change)}%</div>
+      </div>`;
+  });
+  html += `
+    <div onclick="toggleGainers()" style="text-align:center;padding:10px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:0.2em;">
+      ${isExpanded ? '▲ 접기' : '▼ 더보기'}
+    </div>`;
+  document.getElementById('gainers-list').innerHTML = html;
+}
+
+function toggleGainers() {
+  isExpanded = !isExpanded;
+  renderGainers(isExpanded ? top10 : top5);
+}
+
+renderGainers(top5);
+        
       } catch(e) {
         console.error('상승률 불러오기 실패', e);
       }
