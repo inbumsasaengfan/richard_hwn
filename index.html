@@ -485,7 +485,34 @@ async function fetchSectors() {
     }
   }
 
-async function fetchSectors() {
+let expandedSector = null;
+
+  async function fetchSectorCoins(categoryId, elementId) {
+    try {
+      const res = await fetch(`https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&category=${categoryId}&order=market_cap_desc&per_page=5&page=1&sparkline=false&price_change_percentage=24h`);
+      const coins = await res.json();
+      let html = '';
+      coins.forEach(coin => {
+        const change = coin.price_change_percentage_24h?.toFixed(2);
+        const price = coin.current_price < 1 ? coin.current_price.toFixed(4) : coin.current_price.toLocaleString();
+        const isUp = change >= 0;
+        const cls = isUp ? 'up' : 'down';
+        const arrow = isUp ? '▲' : '▼';
+        html += `
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 16px 10px 48px;background:var(--surface2);border-bottom:1px solid var(--border);">
+            <img src="${coin.image}" style="width:20px;height:20px;border-radius:50%;">
+            <div style="flex:1;font-size:13px;font-weight:600;">${coin.symbol.toUpperCase()}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);">$${price}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;margin-left:8px;" class="${cls}">${arrow} ${Math.abs(change)}%</div>
+          </div>`;
+      });
+      document.getElementById(elementId).innerHTML = html;
+    } catch(e) {
+      console.error('섹터 코인 불러오기 실패', e);
+    }
+  }
+
+  async function fetchSectors() {
     try {
       const res = await fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_change_24h_desc');
       const data = await res.json();
@@ -498,10 +525,14 @@ async function fetchSectors() {
         const cls = isUp ? 'up' : 'down';
         const arrow = isUp ? '▲' : '▼';
         html += `
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);width:20px;">${i + 1}</div>
-            <div style="flex:1;font-size:14px;font-weight:700;">${sector.name}</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:13px;" class="${cls}">${arrow} ${Math.abs(change)}%</div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;overflow:hidden;">
+            <div onclick="toggleSector('${sector.id}', 'coins-${i}')" style="display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);width:20px;">${i + 1}</div>
+              <div style="flex:1;font-size:14px;font-weight:700;">${sector.name}</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:13px;margin-right:8px;" class="${cls}">${arrow} ${Math.abs(change)}%</div>
+              <div id="arrow-${i}" style="color:var(--gold);font-size:12px;">▼</div>
+            </div>
+            <div id="coins-${i}" style="display:none;"></div>
           </div>`;
       });
       document.getElementById('sectors-list').innerHTML = html;
@@ -510,8 +541,19 @@ async function fetchSectors() {
     }
   }
 
-  fetchSectors();
-  setInterval(fetchSectors, 300000);
+  function toggleSector(categoryId, elementId) {
+    const el = document.getElementById(elementId);
+    const index = elementId.split('-')[1];
+    const arrow = document.getElementById('arrow-' + index);
+    if (el.style.display === 'none') {
+      el.style.display = 'block';
+      arrow.textContent = '▲';
+      if (!el.innerHTML) fetchSectorCoins(categoryId, elementId);
+    } else {
+      el.style.display = 'none';
+      arrow.textContent = '▼';
+    }
+  }
   
 fetchPrices();
   setInterval(fetchPrices, 60000);
