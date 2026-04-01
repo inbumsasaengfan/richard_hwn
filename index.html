@@ -415,12 +415,73 @@
     }
   }
 
+async function fetchFundingRate() {
+    try {
+      const res = await fetch('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT');
+      const res2 = await fetch('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=ETHUSDT');
+      const btc = await res.json();
+      const eth = await res2.json();
+
+      function formatRate(rate) {
+        const r = (parseFloat(rate) * 100).toFixed(4);
+        return (r >= 0 ? '+' : '') + r + '%';
+      }
+
+      function getColor(rate) {
+        const r = parseFloat(rate) * 100;
+        if (r > 0.05) return '#E05252';
+        if (r > 0) return '#C9A84C';
+        if (r < -0.05) return '#52C78A';
+        return '#8A8FA8';
+      }
+
+      function getNextFunding(nextTime) {
+        const now = Date.now();
+        const diff = nextTime - now;
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        return `Next: ${h}h ${m}m`;
+      }
+
+      document.getElementById('fr-btc').textContent = formatRate(btc.lastFundingRate);
+      document.getElementById('fr-btc').style.color = getColor(btc.lastFundingRate);
+      document.getElementById('fr-btc-time').textContent = getNextFunding(btc.nextFundingTime);
+
+      document.getElementById('fr-eth').textContent = formatRate(eth.lastFundingRate);
+      document.getElementById('fr-eth').style.color = getColor(eth.lastFundingRate);
+      document.getElementById('fr-eth-time').textContent = getNextFunding(eth.nextFundingTime);
+
+    } catch(e) {
+      console.error('펀딩비 불러오기 실패', e);
+    }
+  }
+
+  fetchFundingRate();
+  setInterval(fetchFundingRate, 60000);
+  
 fetchPrices();
   setInterval(fetchPrices, 60000);
   fetchGainers();
   setInterval(fetchGainers, 300000);
 
 </script>
+
+<!-- 펀딩비 -->
+  <div class="section">
+    <div class="section-label">Funding Rate</div>
+    <div style="display:flex;gap:12px;">
+      <div style="flex:1;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;">BTC</div>
+        <div id="fr-btc" style="font-family:'Bebas Neue',sans-serif;font-size:28px;">--</div>
+        <div id="fr-btc-time" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:6px;">--</div>
+      </div>
+      <div style="flex:1;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;">ETH</div>
+        <div id="fr-eth" style="font-family:'Bebas Neue',sans-serif;font-size:28px;">--</div>
+        <div id="fr-eth-time" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:6px;">--</div>
+      </div>
+    </div>
+  </div>
   
 <!-- 상승률 순위 -->
   <div class="section">
@@ -432,17 +493,6 @@ fetchPrices();
     </div>
     <div id="gainers-list">
       <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
-    </div>
-  </div>
-
-<!-- 청산맵 -->
-  <div class="section">
-    <div class="section-label">Liquidation Map</div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden;">
-      <iframe src="https://www.coinglass.com/LiquidationMap" 
-        style="width:100%;height:500px;border:none;" 
-        scrolling="no">
-      </iframe>
     </div>
   </div>
   
