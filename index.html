@@ -485,6 +485,69 @@ async function fetchSectors() {
     }
   }
 
+let currentSectorTab = '24h';
+  let sectorsData = { '24h': [], '7d': [], '30d': [] };
+
+  function switchSectorTab(tab) {
+    currentSectorTab = tab;
+    ['24h', '7d', '30d'].forEach(t => {
+      const btn = document.getElementById('stab-' + t);
+      if (t === tab) {
+        btn.style.background = 'rgba(201,168,76,0.15)';
+        btn.style.color = '#C9A84C';
+        btn.style.borderColor = 'rgba(201,168,76,0.5)';
+      } else {
+        btn.style.background = 'transparent';
+        btn.style.color = '#888';
+        btn.style.borderColor = 'rgba(255,255,255,0.1)';
+      }
+    });
+    renderSectors(sectorsData[tab]);
+  }
+
+  function renderSectors(list) {
+    const tab = currentSectorTab;
+    let html = '';
+    list.forEach((sector, i) => {
+      let change;
+      if (tab === '24h') change = sector.market_cap_change_24h?.toFixed(2);
+      else if (tab === '7d') change = sector.market_cap_change_7d?.toFixed(2);
+      else change = sector.market_cap_change_30d?.toFixed(2);
+      if (!change) return;
+      const isUp = change >= 0;
+      const cls = isUp ? 'up' : 'down';
+      const arrow = isUp ? '▲' : '▼';
+      html += `
+        <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);width:20px;">${i + 1}</div>
+          <div style="flex:1;font-size:14px;font-weight:700;">${sector.name}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:13px;" class="${cls}">${arrow} ${Math.abs(change)}%</div>
+        </div>`;
+    });
+    document.getElementById('sectors-list').innerHTML = html;
+  }
+
+  async function fetchSectors() {
+    try {
+      const [res24h, res7d, res30d] = await Promise.all([
+        fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_change_24h_desc'),
+        fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_change_7d_desc'),
+        fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_change_30d_desc'),
+      ]);
+      const data24h = await res24h.json();
+      const data7d = await res7d.json();
+      const data30d = await res30d.json();
+
+      sectorsData['24h'] = data24h.slice(0, 3);
+      sectorsData['7d'] = data7d.slice(0, 3);
+      sectorsData['30d'] = data30d.slice(0, 3);
+
+      renderSectors(sectorsData[currentSectorTab]);
+    } catch(e) {
+      console.error('섹터 불러오기 실패', e);
+    }
+  }
+
   fetchSectors();
   setInterval(fetchSectors, 300000);
   
@@ -514,7 +577,12 @@ fetchPrices();
 
 <!-- 섹터 순위 -->
   <div class="section">
-    <div class="section-label">Top Sectors · 24h</div>
+    <div class="section-label">Top Sectors</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button id="stab-24h" onclick="switchSectorTab('24h')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(201,168,76,0.5);background:rgba(201,168,76,0.15);color:#C9A84C;cursor:pointer;">24H</button>
+      <button id="stab-7d" onclick="switchSectorTab('7d')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#888;cursor:pointer;">7D</button>
+      <button id="stab-30d" onclick="switchSectorTab('30d')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#888;cursor:pointer;">30D</button>
+    </div>
     <div id="sectors-list">
       <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
     </div>
