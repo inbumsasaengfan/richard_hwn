@@ -463,7 +463,7 @@ async function fetchSectors() {
     try {
       const res = await fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_change_24h_desc');
       const data = await res.json();
-      const top10 = data.slice(0, 10);
+      const top10 = data.slice(0, 3);
 
       let html = '';
       top10.forEach((sector, i) => {
