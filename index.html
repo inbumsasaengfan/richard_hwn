@@ -426,7 +426,6 @@ async function fetchFundingRate() {
         const r = (parseFloat(rate) * 100).toFixed(4);
         return (r >= 0 ? '+' : '') + r + '%';
       }
-
       function getColor(rate) {
         const r = parseFloat(rate) * 100;
         if (r > 0.05) return '#E05252';
@@ -434,7 +433,6 @@ async function fetchFundingRate() {
         if (r < -0.05) return '#52C78A';
         return '#8A8FA8';
       }
-
       function getNextFunding(nextTime) {
         const now = Date.now();
         const diff = nextTime - now;
@@ -446,46 +444,13 @@ async function fetchFundingRate() {
       document.getElementById('fr-btc').textContent = formatRate(btc.lastFundingRate);
       document.getElementById('fr-btc').style.color = getColor(btc.lastFundingRate);
       document.getElementById('fr-btc-time').textContent = getNextFunding(btc.nextFundingTime);
-
       document.getElementById('fr-eth').textContent = formatRate(eth.lastFundingRate);
       document.getElementById('fr-eth').style.color = getColor(eth.lastFundingRate);
       document.getElementById('fr-eth-time').textContent = getNextFunding(eth.nextFundingTime);
-
     } catch(e) {
       console.error('펀딩비 불러오기 실패', e);
     }
   }
-
-  fetchFundingRate();
-  setInterval(fetchFundingRate, 60000);
-
-async function fetchSectors() {
-    try {
-      const res = await fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_change_24h_desc');
-      const data = await res.json();
-      const top10 = data.slice(0, 3);
-
-      let html = '';
-      top10.forEach((sector, i) => {
-        const change = sector.market_cap_change_24h?.toFixed(2);
-        if (!change) return;
-        const isUp = change >= 0;
-        const cls = isUp ? 'up' : 'down';
-        const arrow = isUp ? '▲' : '▼';
-        html += `
-          <div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">
-            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text-dim);width:20px;">${i + 1}</div>
-            <div style="flex:1;font-size:14px;font-weight:700;">${sector.name}</div>
-            <div style="font-family:'JetBrains Mono',monospace;font-size:13px;" class="${cls}">${arrow} ${Math.abs(change)}%</div>
-          </div>`;
-      });
-      document.getElementById('sectors-list').innerHTML = html;
-    } catch(e) {
-      console.error('섹터 불러오기 실패', e);
-    }
-  }
-
-let expandedSector = null;
 
   async function fetchSectorCoins(categoryId, elementId) {
     try {
@@ -512,11 +477,35 @@ let expandedSector = null;
     }
   }
 
-  async function fetchSectors() {
+  function toggleSector(categoryId, elementId) {
+    const el = document.getElementById(elementId);
+    const index = elementId.split('-')[1];
+    const arrow = document.getElementById('arrow-' + index);
+    if (el.style.display === 'none') {
+      el.style.display = 'block';
+      arrow.textContent = '▲';
+      if (!el.innerHTML) fetchSectorCoins(categoryId, elementId);
+    } else {
+      el.style.display = 'none';
+      arrow.textContent = '▼';
+    }
+  }
+
+  async function fetchCoinGeckoData() {
     try {
-      const res = await fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_change_24h_desc');
-      const data = await res.json();
-      const top3 = data.slice(0, 3);
+      const [marketsRes, sectorsRes] = await Promise.all([
+        fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=200&page=1&sparkline=false&price_change_percentage=24h,7d,30d'),
+        fetch('https://api.coingecko.com/api/v3/coins/categories?order=market_cap_change_24h_desc')
+      ]);
+      const markets = await marketsRes.json();
+      const sectors = await sectorsRes.json();
+
+      gainersData['24h'] = [...markets].sort((a, b) => b.price_change_percentage_24h - a.price_change_percentage_24h).slice(0, 10);
+      gainersData['7d'] = [...markets].sort((a, b) => b.price_change_percentage_7d_in_currency - a.price_change_percentage_7d_in_currency).slice(0, 10);
+      gainersData['30d'] = [...markets].sort((a, b) => b.price_change_percentage_30d_in_currency - a.price_change_percentage_30d_in_currency).slice(0, 10);
+      renderGainers(gainersData[currentGainerTab].slice(0, 5));
+
+      const top3 = sectors.slice(0, 3);
       let html = '';
       top3.forEach((sector, i) => {
         const change = sector.market_cap_change_24h?.toFixed(2);
@@ -537,28 +526,16 @@ let expandedSector = null;
       });
       document.getElementById('sectors-list').innerHTML = html;
     } catch(e) {
-      console.error('섹터 불러오기 실패', e);
+      console.error('CoinGecko 데이터 불러오기 실패', e);
     }
   }
 
-  function toggleSector(categoryId, elementId) {
-    const el = document.getElementById(elementId);
-    const index = elementId.split('-')[1];
-    const arrow = document.getElementById('arrow-' + index);
-    if (el.style.display === 'none') {
-      el.style.display = 'block';
-      arrow.textContent = '▲';
-      if (!el.innerHTML) fetchSectorCoins(categoryId, elementId);
-    } else {
-      el.style.display = 'none';
-      arrow.textContent = '▼';
-    }
-  }
-  
-fetchPrices();
+  fetchPrices();
   setInterval(fetchPrices, 60000);
-  fetchGainers();
-  setInterval(fetchGainers, 300000);
+  fetchFundingRate();
+  setInterval(fetchFundingRate, 60000);
+  fetchCoinGeckoData();
+  setInterval(fetchCoinGeckoData, 600000);
 
 </script>
 
