@@ -400,43 +400,6 @@
     renderGainers(isExpanded ? gainersData[tab].slice(0, 10) : gainersData[tab].slice(0, 5));
   }
 
-async function fetchFundingRate() {
-    try {
-      const res = await fetch('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT');
-      const res2 = await fetch('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=ETHUSDT');
-      const btc = await res.json();
-      const eth = await res2.json();
-
-      function formatRate(rate) {
-        const r = (parseFloat(rate) * 100).toFixed(4);
-        return (r >= 0 ? '+' : '') + r + '%';
-      }
-      function getColor(rate) {
-        const r = parseFloat(rate) * 100;
-        if (r > 0.05) return '#E05252';
-        if (r > 0) return '#C9A84C';
-        if (r < -0.05) return '#52C78A';
-        return '#8A8FA8';
-      }
-      function getNextFunding(nextTime) {
-        const now = Date.now();
-        const diff = nextTime - now;
-        const h = Math.floor(diff / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
-        return `Next: ${h}h ${m}m`;
-      }
-
-      document.getElementById('fr-btc').textContent = formatRate(btc.lastFundingRate);
-      document.getElementById('fr-btc').style.color = getColor(btc.lastFundingRate);
-      document.getElementById('fr-btc-time').textContent = getNextFunding(btc.nextFundingTime);
-      document.getElementById('fr-eth').textContent = formatRate(eth.lastFundingRate);
-      document.getElementById('fr-eth').style.color = getColor(eth.lastFundingRate);
-      document.getElementById('fr-eth-time').textContent = getNextFunding(eth.nextFundingTime);
-    } catch(e) {
-      console.error('펀딩비 불러오기 실패', e);
-    }
-  }
-
   async function fetchCoinGeckoData() {
     try {
       const [marketsRes, sectorsRes] = await Promise.all([
@@ -475,50 +438,50 @@ async function fetchFundingRate() {
 
   fetchPrices();
   setInterval(fetchPrices, 60000);
-  fetchFundingRate();
-  setInterval(fetchFundingRate, 60000);
   fetchCoinGeckoData();
   setInterval(fetchCoinGeckoData, 600000);
 
 </script>
 
-<!-- 펀딩비 -->
-  <div class="section">
-    <div class="section-label">Funding Rate</div>
-    <div style="display:flex;gap:12px;">
-      <div style="flex:1;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;text-align:center;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;">BTC</div>
-        <div id="fr-btc" style="font-family:'Bebas Neue',sans-serif;font-size:28px;">--</div>
-        <div id="fr-btc-time" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:6px;">--</div>
-      </div>
-      <div style="flex:1;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;text-align:center;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;">ETH</div>
-        <div id="fr-eth" style="font-family:'Bebas Neue',sans-serif;font-size:28px;">--</div>
-        <div id="fr-eth-time" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:6px;">--</div>
-      </div>
-    </div>
+<!-- 경제 지표 캘린더 -->
+<div class="section">
+  <div class="section-label">Economic Calendar · High Impact</div>
+  <div style="overflow:hidden;border-radius:4px;border:1px solid var(--border);">
+    <iframe
+      src="https://sslecal2.investing.com?columns=exc_flags,exc_currency,exc_importance,exc_actual,exc_forecast,exc_previous&importance=3&countries=5&features=datepicker,timezone&calType=week&timeZone=28&lang=18&theme=dark"
+      width="100%"
+      height="467"
+      frameborder="0"
+      allowtransparency="true"
+      marginwidth="0"
+      marginheight="0">
+    </iframe>
   </div>
+  <div style="text-align:right;font-size:11px;color:var(--text-dim);margin-top:6px;font-family:'JetBrains Mono',monospace;">
+    Powered by <a href="https://www.investing.com" target="_blank" style="color:var(--gold);text-decoration:none;">Investing.com</a>
+  </div>
+</div>
 
 <!-- 섹터 순위 -->
-  <div class="section">
-    <div class="section-label">Top Sectors · 24h</div>
-    <div id="sectors-list">
-      <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
-    </div>
+<div class="section">
+  <div class="section-label">Top Sectors · 24h</div>
+  <div id="sectors-list">
+    <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
   </div>
-  
+</div>
+
 <!-- 상승률 순위 -->
-  <div class="section">
-    <div class="section-label">Top Gainers</div>
-    <div style="display:flex;gap:8px;margin-bottom:12px;">
-      <button id="tab-24h" onclick="switchGainerTab('24h')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(201,168,76,0.5);background:rgba(201,168,76,0.15);color:#C9A84C;cursor:pointer;">24H</button>
-      <button id="tab-7d" onclick="switchGainerTab('7d')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#888;cursor:pointer;">7D</button>
-      <button id="tab-30d" onclick="switchGainerTab('30d')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#888;cursor:pointer;">30D</button>
-    </div>
-    <div id="gainers-list">
-      <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
-    </div>
+<div class="section">
+  <div class="section-label">Top Gainers</div>
+  <div style="display:flex;gap:8px;margin-bottom:12px;">
+    <button id="tab-24h" onclick="switchGainerTab('24h')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(201,168,76,0.5);background:rgba(201,168,76,0.15);color:#C9A84C;cursor:pointer;">24H</button>
+    <button id="tab-7d" onclick="switchGainerTab('7d')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#888;cursor:pointer;">7D</button>
+    <button id="tab-30d" onclick="switchGainerTab('30d')" style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#888;cursor:pointer;">30D</button>
   </div>
+  <div id="gainers-list">
+    <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
+  </div>
+</div>
   
   <!-- 거래소 레퍼럴 -->
   <div class="section">
