@@ -444,14 +444,10 @@
 
 </script>
 
-<!-- 섹터별 상승률 섹션 (코인게코 기준) -->
-
+<!-- 섹터별 24H 등락률 -->
 <style>
-  .sector-section { padding: 1.5rem 0; }
-  .sector-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-  .sector-title { font-size: 16px; font-weight: 500; }
   .sector-source { font-size: 11px; opacity: 0.35; margin-bottom: 1rem; }
-  .sector-refresh-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid rgba(128,128,128,0.3); background: transparent; cursor: pointer; }
+  .sector-refresh-btn { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; padding: 6px 16px; border-radius: 3px; border: 1px solid rgba(201,168,76,0.5); background: transparent; color: #888; cursor: pointer; }
   .sector-refresh-btn:hover { background: rgba(128,128,128,0.1); }
   .sector-table-wrap { border: 0.5px solid rgba(128,128,128,0.2); border-radius: 12px; overflow: hidden; }
   .sector-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -469,15 +465,15 @@
   .sector-loading { text-align: center; padding: 2rem; opacity: 0.5; font-size: 14px; }
   .sector-error { text-align: center; padding: 1.5rem; color: #e24b4a; font-size: 13px; }
   .sector-last-updated { font-size: 11px; opacity: 0.35; margin-top: 8px; text-align: right; }
+  .sector-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
 </style>
 
-<div class="sector-section">
-  <div class="sector-header">
-    <span class="sector-title">섹터별 24h 등락률</span>
+<div class="section">
+  <div class="sector-header-row">
+    <div class="section-label" style="margin-bottom:0;">섹터별 24H 등락률</div>
     <button class="sector-refresh-btn" onclick="sectorFetchData()">새로고침</button>
   </div>
   <div class="sector-source">* CoinGecko 카테고리 기준</div>
-
   <div class="sector-table-wrap">
     <table class="sector-table">
       <thead>
@@ -520,13 +516,11 @@
   function sectorFetchData() {
     document.getElementById('sector-tbody').innerHTML =
       '<tr><td colspan="5" class="sector-loading">데이터 불러오는 중...</td></tr>';
-
     fetch('https://api.coingecko.com/api/v3/coins/categories')
       .then(function(res) { return res.json(); })
       .then(function(json) {
         var idMap = {};
         SECTOR_IDS.forEach(function(s) { idMap[s.id] = s.label; });
-
         var filtered = json
           .filter(function(c) { return idMap[c.id] !== undefined; })
           .map(function(c) {
@@ -538,10 +532,8 @@
             };
           })
           .sort(function(a, b) { return b.change - a.change; });
-
         document.getElementById('sector-last-updated').textContent =
           '마지막 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
-
         var rows = filtered.map(function(s, i) {
           var cls = s.change >= 0 ? 'sector-up' : 'sector-down';
           var sign = s.change >= 0 ? '+' : '';
@@ -553,7 +545,6 @@
             + '<td class="num sector-vol">' + sectorFmtMcap(s.volume) + '</td>'
             + '</tr>';
         }).join('');
-
         document.getElementById('sector-tbody').innerHTML =
           rows || '<tr><td colspan="5" class="sector-loading">데이터 없음</td></tr>';
       })
@@ -567,14 +558,10 @@
   setInterval(sectorFetchData, 60000);
 </script>
 
-<!-- 바이빗 선물 상승률 순위 -->
-  
+<!-- Bybit 선물 상승률 TOP 20 -->
 <style>
-  .bybit-section { padding: 1.5rem 0; }
-  .bybit-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-  .bybit-section-title { font-size: 16px; font-weight: 500; }
   .bybit-badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; background: rgba(0,200,100,0.15); color: #00c864; }
-  .bybit-refresh-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid rgba(128,128,128,0.3); background: transparent; cursor: pointer; }
+  .bybit-refresh-btn { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; padding: 6px 16px; border-radius: 3px; border: 1px solid rgba(201,168,76,0.5); background: transparent; color: #888; cursor: pointer; }
   .bybit-refresh-btn:hover { background: rgba(128,128,128,0.1); }
   .bybit-table-wrap { border: 0.5px solid rgba(128,128,128,0.2); border-radius: 12px; overflow: hidden; }
   .bybit-table { width: 100%; border-collapse: collapse; font-size: 13px; }
@@ -594,17 +581,14 @@
   .bybit-last-updated { font-size: 11px; opacity: 0.35; margin-top: 8px; text-align: right; }
   .bybit-toggle-btn { display: block; width: 100%; margin-top: 10px; padding: 8px; font-size: 12px; border-radius: 8px; border: 0.5px solid rgba(128,128,128,0.3); background: transparent; cursor: pointer; opacity: 0.6; }
   .bybit-toggle-btn:hover { background: rgba(128,128,128,0.08); opacity: 1; }
+  .bybit-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 </style>
 
-<div class="bybit-section">
-  <div class="bybit-section-header">
-    <span class="bybit-section-title">Bybit 선물 상승률 TOP 20</span>
-    <span class="bybit-badge">LIVE</span>
-  </div>
-  <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+<div class="section">
+  <div class="bybit-header-row">
+    <div class="section-label" style="margin-bottom:0;">BYBIT 선물 상승률 TOP 20 <span class="bybit-badge">LIVE</span></div>
     <button class="bybit-refresh-btn" onclick="bybitFetchData()">새로고침</button>
   </div>
-
   <div class="bybit-table-wrap">
     <table class="bybit-table">
       <thead>
@@ -620,7 +604,6 @@
       <tbody id="bybit-tbody-extra" style="display:none;"></tbody>
     </table>
   </div>
-
   <button class="bybit-toggle-btn" id="bybit-toggle-btn" onclick="bybitToggle()">▼ 더 보기 (TOP 20)</button>
   <div class="bybit-last-updated" id="bybit-last-updated"></div>
 </div>
