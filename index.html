@@ -452,6 +452,114 @@
   </div>
 </div>
 
+<!-- 바이빗 선물 상승률 순위 -->
+  
+<style>
+  .bybit-section { padding: 1.5rem 0; }
+  .bybit-section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .bybit-section-title { font-size: 16px; font-weight: 500; }
+  .bybit-badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; background: rgba(0,200,100,0.15); color: #00c864; }
+  .bybit-refresh-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid rgba(128,128,128,0.3); background: transparent; cursor: pointer; }
+  .bybit-refresh-btn:hover { background: rgba(128,128,128,0.1); }
+  .bybit-table-wrap { border: 0.5px solid rgba(128,128,128,0.2); border-radius: 12px; overflow: hidden; }
+  .bybit-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .bybit-table th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 500; background: rgba(128,128,128,0.08); border-bottom: 0.5px solid rgba(128,128,128,0.2); }
+  .bybit-table th.num { text-align: right; }
+  .bybit-table td { padding: 9px 12px; border-bottom: 0.5px solid rgba(128,128,128,0.12); }
+  .bybit-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .bybit-table tr:last-child td { border-bottom: none; }
+  .bybit-table tr:hover td { background: rgba(128,128,128,0.05); }
+  .bybit-rank { font-size: 12px; opacity: 0.4; }
+  .bybit-symbol { font-weight: 500; font-size: 13px; }
+  .bybit-pair { font-size: 11px; opacity: 0.4; }
+  .bybit-up { color: #00c864; }
+  .bybit-vol { opacity: 0.5; }
+  .bybit-loading { text-align: center; padding: 2rem; opacity: 0.5; font-size: 14px; }
+  .bybit-error { text-align: center; padding: 1.5rem; color: #e24b4a; font-size: 13px; }
+  .bybit-last-updated { font-size: 11px; opacity: 0.35; margin-top: 8px; text-align: right; }
+</style>
+
+<div class="bybit-section">
+  <div class="bybit-section-header">
+    <span class="bybit-section-title">Bybit 선물 상승률 TOP 20</span>
+    <span class="bybit-badge">LIVE</span>
+  </div>
+  <div style="display:flex; justify-content:flex-end; margin-bottom:1rem;">
+    <button class="bybit-refresh-btn" onclick="bybitFetchData()">새로고침</button>
+  </div>
+
+  <div class="bybit-table-wrap">
+    <table class="bybit-table">
+      <thead>
+        <tr>
+          <th style="width:32px">#</th>
+          <th>심볼</th>
+          <th class="num">현재가</th>
+          <th class="num">24h 등락률</th>
+          <th class="num">거래량(USDT)</th>
+        </tr>
+      </thead>
+      <tbody id="bybit-tbody">
+        <tr><td colspan="5" class="bybit-loading">데이터 불러오는 중...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="bybit-last-updated" id="bybit-last-updated"></div>
+</div>
+
+<script>
+async function bybitFetchData() {
+  try {
+    const res = await fetch('https://api.bybit.com/v5/market/tickers?category=linear');
+    const json = await res.json();
+    if (json.retCode !== 0) throw new Error(json.retMsg);
+    const data = json.result.list
+      .filter(t => t.symbol.endsWith('USDT'))
+      .map(t => ({
+        symbol: t.symbol.replace('USDT', ''),
+        price: parseFloat(t.lastPrice),
+        change: parseFloat(t.price24hPcnt) * 100,
+        volume: parseFloat(t.turnover24h)
+      }))
+      .filter(t => !isNaN(t.change) && t.change > 0)
+      .sort((a, b) => b.change - a.change)
+      .slice(0, 20);
+
+    document.getElementById('bybit-last-updated').textContent =
+      '마지막 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
+
+    const rows = data.map((t, i) => `<tr>
+      <td class="bybit-rank">${i + 1}</td>
+      <td><span class="bybit-symbol">${t.symbol}</span><br><span class="bybit-pair">USDT 선물</span></td>
+      <td class="num">${bybitFmtPrice(t.price)}</td>
+      <td class="num bybit-up">+${t.change.toFixed(2)}%</td>
+      <td class="num bybit-vol">${bybitFmtVol(t.volume)}</td>
+    </tr>`).join('');
+
+    document.getElementById('bybit-tbody').innerHTML = rows || '<tr><td colspan="5" class="bybit-loading">데이터 없음</td></tr>';
+  } catch (e) {
+    document.getElementById('bybit-tbody').innerHTML =
+      `<tr><td colspan="5" class="bybit-error">데이터 로드 실패: ${e.message}</td></tr>`;
+  }
+}
+
+function bybitFmtVol(v) {
+  if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+  if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+  if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+  return v.toFixed(0);
+}
+
+function bybitFmtPrice(p) {
+  if (p >= 1000) return '$' + p.toLocaleString('en-US', { maximumFractionDigits: 2 });
+  if (p >= 1) return '$' + p.toFixed(4);
+  return '$' + p.toFixed(6);
+}
+
+bybitFetchData();
+setInterval(bybitFetchData, 30000);
+</script>
+  
 <!-- 상승률 순위 -->
 <div class="section">
   <div class="section-label">Top Gainers</div>
