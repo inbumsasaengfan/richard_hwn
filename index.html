@@ -444,13 +444,128 @@
 
 </script>
 
-<!-- 섹터 순위 -->
-<div class="section">
-  <div class="section-label">Top Sectors · 24h</div>
-  <div id="sectors-list">
-    <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
+<!-- 섹터별 상승률 섹션 (코인게코 기준) -->
+
+<style>
+  .sector-section { padding: 1.5rem 0; }
+  .sector-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .sector-title { font-size: 16px; font-weight: 500; }
+  .sector-source { font-size: 11px; opacity: 0.35; margin-bottom: 1rem; }
+  .sector-refresh-btn { font-size: 12px; padding: 4px 12px; border-radius: 20px; border: 0.5px solid rgba(128,128,128,0.3); background: transparent; cursor: pointer; }
+  .sector-refresh-btn:hover { background: rgba(128,128,128,0.1); }
+  .sector-table-wrap { border: 0.5px solid rgba(128,128,128,0.2); border-radius: 12px; overflow: hidden; }
+  .sector-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .sector-table th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 500; background: rgba(128,128,128,0.08); border-bottom: 0.5px solid rgba(128,128,128,0.2); }
+  .sector-table th.num { text-align: right; }
+  .sector-table td { padding: 9px 12px; border-bottom: 0.5px solid rgba(128,128,128,0.12); }
+  .sector-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sector-table tr:last-child td { border-bottom: none; }
+  .sector-table tr:hover td { background: rgba(128,128,128,0.05); }
+  .sector-rank { font-size: 12px; opacity: 0.4; }
+  .sector-name { font-weight: 500; font-size: 13px; }
+  .sector-up { color: #00c864; }
+  .sector-down { color: #e24b4a; }
+  .sector-vol { opacity: 0.5; font-size: 12px; }
+  .sector-loading { text-align: center; padding: 2rem; opacity: 0.5; font-size: 14px; }
+  .sector-error { text-align: center; padding: 1.5rem; color: #e24b4a; font-size: 13px; }
+  .sector-last-updated { font-size: 11px; opacity: 0.35; margin-top: 8px; text-align: right; }
+</style>
+
+<div class="sector-section">
+  <div class="sector-header">
+    <span class="sector-title">섹터별 24h 등락률</span>
+    <button class="sector-refresh-btn" onclick="sectorFetchData()">새로고침</button>
   </div>
+  <div class="sector-source">* CoinGecko 카테고리 기준</div>
+
+  <div class="sector-table-wrap">
+    <table class="sector-table">
+      <thead>
+        <tr>
+          <th style="width:32px">#</th>
+          <th>섹터</th>
+          <th class="num">24h 등락률</th>
+          <th class="num">시가총액</th>
+          <th class="num">거래량(24h)</th>
+        </tr>
+      </thead>
+      <tbody id="sector-tbody">
+        <tr><td colspan="5" class="sector-loading">데이터 불러오는 중...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="sector-last-updated" id="sector-last-updated"></div>
 </div>
+
+<script>
+  var SECTOR_IDS = [
+    { id: 'layer-1', label: 'Layer 1' },
+    { id: 'layer-2', label: 'Layer 2' },
+    { id: 'decentralized-finance-defi', label: 'DeFi' },
+    { id: 'artificial-intelligence', label: 'AI' },
+    { id: 'meme-token', label: 'Meme' },
+    { id: 'gaming', label: 'GameFi' },
+    { id: 'real-world-assets-rwa', label: 'RWA' },
+    { id: 'bitcoin-ecosystem', label: 'BTC 생태계' }
+  ];
+
+  function sectorFmtMcap(v) {
+    if (!v) return '-';
+    if (v >= 1e12) return '$' + (v / 1e12).toFixed(2) + 'T';
+    if (v >= 1e9) return '$' + (v / 1e9).toFixed(1) + 'B';
+    if (v >= 1e6) return '$' + (v / 1e6).toFixed(0) + 'M';
+    return '$' + v.toFixed(0);
+  }
+
+  function sectorFetchData() {
+    document.getElementById('sector-tbody').innerHTML =
+      '<tr><td colspan="5" class="sector-loading">데이터 불러오는 중...</td></tr>';
+
+    fetch('https://api.coingecko.com/api/v3/coins/categories')
+      .then(function(res) { return res.json(); })
+      .then(function(json) {
+        var idMap = {};
+        SECTOR_IDS.forEach(function(s) { idMap[s.id] = s.label; });
+
+        var filtered = json
+          .filter(function(c) { return idMap[c.id] !== undefined; })
+          .map(function(c) {
+            return {
+              label: idMap[c.id],
+              change: c.market_cap_change_24h || 0,
+              mcap: c.market_cap || 0,
+              volume: c.volume_24h || 0
+            };
+          })
+          .sort(function(a, b) { return b.change - a.change; });
+
+        document.getElementById('sector-last-updated').textContent =
+          '마지막 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
+
+        var rows = filtered.map(function(s, i) {
+          var cls = s.change >= 0 ? 'sector-up' : 'sector-down';
+          var sign = s.change >= 0 ? '+' : '';
+          return '<tr>'
+            + '<td class="sector-rank">' + (i + 1) + '</td>'
+            + '<td><span class="sector-name">' + s.label + '</span></td>'
+            + '<td class="num ' + cls + '">' + sign + s.change.toFixed(2) + '%</td>'
+            + '<td class="num sector-vol">' + sectorFmtMcap(s.mcap) + '</td>'
+            + '<td class="num sector-vol">' + sectorFmtMcap(s.volume) + '</td>'
+            + '</tr>';
+        }).join('');
+
+        document.getElementById('sector-tbody').innerHTML =
+          rows || '<tr><td colspan="5" class="sector-loading">데이터 없음</td></tr>';
+      })
+      .catch(function(e) {
+        document.getElementById('sector-tbody').innerHTML =
+          '<tr><td colspan="5" class="sector-error">데이터 로드 실패: ' + e.message + '</td></tr>';
+      });
+  }
+
+  sectorFetchData();
+  setInterval(sectorFetchData, 60000);
+</script>
 
 <!-- 바이빗 선물 상승률 순위 -->
   
