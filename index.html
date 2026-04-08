@@ -511,63 +511,77 @@
 </div>
 
 <script>
-let bybitAllData = [];
-let bybitExpanded = false;
+  var bybitAllData = [];
+  var bybitExpanded = false;
 
-async function bybitFetchData() {
-  try {
-    const res = await fetch('https://api.bybit.com/v5/market/tickers?category=linear');
-    const json = await res.json();
-    if (json.retCode !== 0) throw new Error(json.retMsg);
-    bybitAllData = json.result.list
-      .filter(t => t.symbol.endsWith('USDT'))
-      .map(t => ({
-        symbol: t.symbol.replace('USDT', ''),
-        price: parseFloat(t.lastPrice),
-        change: parseFloat(t.price24hPcnt) * 100,
-        volume: parseFloat(t.turnover24h)
-      }))
-      .filter(t => !isNaN(t.change) && t.change > 0)
-      .sort((a, b) => b.change - a.change)
-      .slice(0, 20);
-
-    document.getElementById('bybit-last-updated').textContent =
-      '마지막 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
-
-    bybitRender();
-  } catch (e) {
-    document.getElementById('bybit-tbody-top').innerHTML =
-      `<tr><td colspan="5" class="bybit-error">데이터 로드 실패: ${e.message}</td></tr>`;
+  function bybitFmtVol(v) {
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+    return v.toFixed(0);
   }
-}
 
-function bybitRender() {
-  const makeRow = (t, i) => `<tr>
-    <td class="bybit-rank">${i + 1}</td>
-    <td><span class="bybit-symbol">${t.symbol}</span><br><span class="bybit-pair">USDT 선물</span></td>
-    <td class="num">${bybitFmtPrice(t.price)}</td>
-    <td class="num bybit-up">+${t.change.toFixed(2)}%</td>
-    <td class="num bybit-vol">${bybitFmtVol(t.volume)}</td>
-  </tr>`;
+  function bybitFmtPrice(p) {
+    if (p >= 1000) return '$' + p.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (p >= 1) return '$' + p.toFixed(4);
+    return '$' + p.toFixed(6);
+  }
 
-  document.getElementById('bybit-tbody-top').innerHTML =
-    bybitAllData.slice(0, 10).map((t, i) => makeRow(t, i)).join('') ||
-    `<tr><td colspan="5" class="bybit-loading">데이터 없음</td></tr>`;
+  function bybitMakeRow(t, i) {
+    return '<tr>'
+      + '<td class="bybit-rank">' + (i + 1) + '</td>'
+      + '<td><span class="bybit-symbol">' + t.symbol + '</span><br><span class="bybit-pair">USDT 선물</span></td>'
+      + '<td class="num">' + bybitFmtPrice(t.price) + '</td>'
+      + '<td class="num bybit-up">+' + t.change.toFixed(2) + '%</td>'
+      + '<td class="num bybit-vol">' + bybitFmtVol(t.volume) + '</td>'
+      + '</tr>';
+  }
 
-  document.getElementById('bybit-tbody-extra').innerHTML =
-    bybitAllData.slice(10, 20).map((t, i) => makeRow(t, i + 10)).join('');
-}
+  function bybitRender() {
+    var topRows = bybitAllData.slice(0, 10).map(function(t, i) { return bybitMakeRow(t, i); }).join('');
+    var extraRows = bybitAllData.slice(10, 20).map(function(t, i) { return bybitMakeRow(t, i + 10); }).join('');
+    document.getElementById('bybit-tbody-top').innerHTML = topRows || '<tr><td colspan="5" class="bybit-loading">데이터 없음</td></tr>';
+    document.getElementById('bybit-tbody-extra').innerHTML = extraRows;
+  }
 
-function bybitToggle() {
-  bybitExpanded = !bybitExpanded;
-  const extra = document.getElementById('bybit-tbody-extra');
-  const btn = document.getElementById('bybit-toggle-btn');
-  extra.style.display = bybitExpanded ? 'table-row-group' : 'none';
-  btn.textContent = bybitExpanded ? '▲ 접기' : '▼ 더 보기 (TOP 20)';
-}
+  function bybitToggle() {
+    bybitExpanded = !bybitExpanded;
+    var extra = document.getElementById('bybit-tbody-extra');
+    var btn = document.getElementById('bybit-toggle-btn');
+    extra.style.display = bybitExpanded ? 'table-row-group' : 'none';
+    btn.textContent = bybitExpanded ? '▲ 접기' : '▼ 더 보기 (TOP 20)';
+  }
 
-bybitFetchData();
-setInterval(bybitFetchData, 30000);
+  function bybitFetchData() {
+    fetch('https://api.bybit.com/v5/market/tickers?category=linear')
+      .then(function(res) { return res.json(); })
+      .then(function(json) {
+        if (json.retCode !== 0) throw new Error(json.retMsg);
+        bybitAllData = json.result.list
+          .filter(function(t) { return t.symbol.endsWith('USDT'); })
+          .map(function(t) {
+            return {
+              symbol: t.symbol.replace('USDT', ''),
+              price: parseFloat(t.lastPrice),
+              change: parseFloat(t.price24hPcnt) * 100,
+              volume: parseFloat(t.turnover24h)
+            };
+          })
+          .filter(function(t) { return !isNaN(t.change) && t.change > 0; })
+          .sort(function(a, b) { return b.change - a.change; })
+          .slice(0, 20);
+        document.getElementById('bybit-last-updated').textContent =
+          '마지막 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
+        bybitRender();
+      })
+      .catch(function(e) {
+        document.getElementById('bybit-tbody-top').innerHTML =
+          '<tr><td colspan="5" class="bybit-error">데이터 로드 실패: ' + e.message + '</td></tr>';
+      });
+  }
+
+  bybitFetchData();
+  setInterval(bybitFetchData, 30000);
 </script>
   
 <!-- 상승률 순위 -->
