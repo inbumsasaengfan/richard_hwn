@@ -636,8 +636,8 @@
   }
 
   function bybitRender() {
-    var topRows = bybitAllData.slice(0, 10).map(function(t, i) { return bybitMakeRow(t, i); }).join('');
-    var extraRows = bybitAllData.slice(10, 20).map(function(t, i) { return bybitMakeRow(t, i + 10); }).join('');
+    var topRows = bybitAllData.slice(0, 7).map(function(t, i) { return bybitMakeRow(t, i); }).join('');
+    var extraRows = bybitAllData.slice(7, 20).map(function(t, i) { return bybitMakeRow(t, i + 10); }).join('');
     document.getElementById('bybit-tbody-top').innerHTML = topRows || '<tr><td colspan="5" class="bybit-loading">데이터 없음</td></tr>';
     document.getElementById('bybit-tbody-extra').innerHTML = extraRows;
   }
