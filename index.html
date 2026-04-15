@@ -561,7 +561,7 @@
 
   function renderGainers() {
     var list = gainersData[currentTab];
-    var show = gainersExpanded ? list.slice(0, 20) : list.slice(0, 5);
+    var show = list.slice(0, 7);
     var html = '';
     show.forEach(function(coin, i) {
       var change = currentTab === '24h' ? coin.price_change_percentage_24h
@@ -583,8 +583,6 @@
         + (isUp ? '▲' : '▼') + ' ' + Math.abs(change).toFixed(2) + '%</div>'
         + '</div>';
     });
-    html += '<div onclick="toggleGainers()" style="text-align:center;padding:10px;cursor:pointer;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:#C9A84C;letter-spacing:0.2em;border:1px solid rgba(201,168,76,0.5);border-radius:3px;margin-top:4px;">'
-      + (gainersExpanded ? '▲ 접기' : '▼ 더 보기') + '</div>';
     document.getElementById('gainers-list').innerHTML = html;
   }
 
