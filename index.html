@@ -7,17 +7,17 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
---gold: #C9A84C;
---gold-light: #F0C96B;
---gold-dim: rgba(201,168,76,0.15);
---bg: #1A1F2E;
---surface: #222840;
---surface2: #2A3050;
---border: rgba(201,168,76,0.2);
---text: #E8E4DC;
---text-dim: #8A8FA8;
---red: #E05252;
---green: #52C78A;
+    --gold: #C9A84C;
+    --gold-light: #F0C96B;
+    --gold-dim: rgba(201,168,76,0.15);
+    --bg: #1A1F2E;
+    --surface: #222840;
+    --surface2: #2A3050;
+    --border: rgba(201,168,76,0.2);
+    --text: #E8E4DC;
+    --text-dim: #8A8FA8;
+    --red: #E05252;
+    --green: #52C78A;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,7 +30,6 @@
     overflow-x: hidden;
   }
 
-  /* Background grid */
   body::before {
     content: '';
     position: fixed;
@@ -43,7 +42,6 @@
     z-index: 0;
   }
 
-  /* Radial glow */
   body::after {
     content: '';
     position: fixed;
@@ -68,7 +66,7 @@
   /* Header */
   .header {
     text-align: center;
-    margin-bottom: 56px;
+    margin-bottom: 48px;
     animation: fadeUp 0.6s ease both;
   }
 
@@ -80,7 +78,6 @@
     color: var(--gold);
     line-height: 1;
     text-shadow: 0 0 40px rgba(201,168,76,0.3);
-    position: relative;
   }
 
   .logo-mark::after {
@@ -112,7 +109,6 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    animation: fadeUp 0.6s ease both;
   }
 
   .section-label::after {
@@ -121,6 +117,9 @@
     height: 1px;
     background: var(--border);
   }
+
+  /* Section spacing */
+  .section { margin-bottom: 48px; }
 
   /* Card */
   .card {
@@ -143,64 +142,33 @@
   .card::before {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
+    left: 0; top: 0; bottom: 0;
     width: 3px;
     background: var(--gold);
     opacity: 0;
     transition: opacity 0.2s;
   }
 
-  .card:hover {
-    background: var(--surface2);
-    border-color: var(--gold);
-    transform: translateX(4px);
-  }
-
+  .card:hover { background: var(--surface2); border-color: var(--gold); transform: translateX(4px); }
   .card:hover::before { opacity: 1; }
 
   .card-icon {
-    width: 40px;
-    height: 40px;
+    width: 40px; height: 40px;
     border-radius: 4px;
     background: var(--gold-dim);
     border: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 18px;
     flex-shrink: 0;
   }
 
   .card-info { flex: 1; }
+  .card-name { font-size: 17px; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 3px; }
+  .card-desc { font-size: 15px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+  .card-arrow { color: var(--gold); font-size: 16px; opacity: 0.5; transition: opacity 0.2s, transform 0.2s; }
+  .card:hover .card-arrow { opacity: 1; transform: translateX(3px); }
 
-  .card-name {
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: 0.03em;
-    margin-bottom: 3px;
-  }
-
-  .card-desc {
-    font-size: 15px;
-    color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .card-arrow {
-    color: var(--gold);
-    font-size: 16px;
-    opacity: 0.5;
-    transition: opacity 0.2s, transform 0.2s;
-  }
-
-  .card:hover .card-arrow {
-    opacity: 1;
-    transform: translateX(3px);
-  }
-
-  /* Badge for events */
+  /* Badge */
   .badge {
     font-family: 'JetBrains Mono', monospace;
     font-size: 9px;
@@ -211,27 +179,70 @@
     text-transform: uppercase;
     flex-shrink: 0;
   }
+  .badge-live { background: rgba(82,199,138,0.15); color: var(--green); border: 1px solid rgba(82,199,138,0.3); }
+  .badge-new { background: var(--gold-dim); color: var(--gold); border: 1px solid var(--border); }
 
-  .badge-live {
-    background: rgba(82,199,138,0.15);
-    color: var(--green);
-    border: 1px solid rgba(82,199,138,0.3);
+  /* Ticker (fixed) */
+  .ticker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 48px;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 12px;
   }
 
-  .badge-hot {
-    background: rgba(224,82,82,0.15);
-    color: var(--red);
-    border: 1px solid rgba(224,82,82,0.3);
+  .ticker-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
   }
 
-  .badge-new {
-    background: var(--gold-dim);
-    color: var(--gold);
-    border: 1px solid var(--border);
-  }
+  .ticker-item { display: flex; align-items: center; gap: 6px; }
+  .up { color: var(--green); }
+  .down { color: var(--red); }
 
-  /* Section spacing */
-  .section { margin-bottom: 48px; }
+  /* Table shared */
+  .data-table-wrap { border: 0.5px solid rgba(128,128,128,0.2); border-radius: 12px; overflow: hidden; }
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th {
+    padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 500;
+    background: rgba(128,128,128,0.08); border-bottom: 0.5px solid rgba(128,128,128,0.2);
+    font-family: 'JetBrains Mono', monospace; color: var(--text-dim);
+  }
+  .data-table th.r { text-align: right; }
+  .data-table td { padding: 9px 12px; border-bottom: 0.5px solid rgba(128,128,128,0.12); }
+  .data-table td.r { text-align: right; font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', monospace; }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(128,128,128,0.05); }
+  .tbl-rank { font-size: 12px; opacity: 0.4; font-family: 'JetBrains Mono', monospace; }
+  .tbl-up { color: #00c864; font-family: 'JetBrains Mono', monospace; }
+  .tbl-down { color: #e24b4a; font-family: 'JetBrains Mono', monospace; }
+  .tbl-dim { opacity: 0.5; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+  .tbl-loading { text-align: center; padding: 2rem; opacity: 0.5; font-size: 14px; }
+  .tbl-error { text-align: center; padding: 1.5rem; color: #e24b4a; font-size: 13px; }
+
+  /* Header row for sections with refresh btn */
+  .section-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-header-row .section-label { margin-bottom: 0; flex: 1; }
+
+  .refresh-btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
+    padding: 6px 16px; border-radius: 3px; border: 1px solid rgba(201,168,76,0.5);
+    background: transparent; color: #888; cursor: pointer;
+  }
+  .refresh-btn:hover { background: rgba(128,128,128,0.1); }
+
+  .toggle-btn {
+    display: block; width: 100%; margin-top: 10px; padding: 8px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
+    border-radius: 3px; border: 1px solid rgba(201,168,76,0.5);
+    background: transparent; color: #C9A84C; cursor: pointer; text-align: center;
+  }
+  .toggle-btn:hover { background: rgba(201,168,76,0.08); }
+
+  .last-updated { font-size: 11px; opacity: 0.35; margin-top: 8px; text-align: right; font-family: 'JetBrains Mono', monospace; }
 
   /* Footer */
   .footer {
@@ -240,15 +251,12 @@
     padding-top: 32px;
     border-top: 1px solid var(--border);
     font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
+    font-size: 13px;
     color: var(--text-dim);
-    letter-spacing: 0.15em;
-    animation: fadeUp 0.6s ease both;
+    letter-spacing: 0.1em;
+    line-height: 1.8;
   }
 
-  .footer span { color: var(--gold); }
-
-  /* Animations */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: translateY(0); }
@@ -258,36 +266,6 @@
   .card:nth-child(2) { animation-delay: 0.10s; }
   .card:nth-child(3) { animation-delay: 0.15s; }
   .card:nth-child(4) { animation-delay: 0.20s; }
-  .card:nth-child(5) { animation-delay: 0.25s; }
-
-  .section:nth-child(2) .section-label { animation-delay: 0.1s; }
-  .section:nth-child(3) .section-label { animation-delay: 0.15s; }
-  .section:nth-child(4) .section-label { animation-delay: 0.2s; }
-
-  /* Ticker tape */
-  .ticker {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    color: var(--text-dim);
-    overflow: hidden;
-    margin-bottom: 48px;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    padding: 8px 0;
-  }
-
-  .ticker-inner {
-    display: inline-flex;
-    gap: 40px;
-    white-space: nowrap;
-    animation: ticker 20s linear infinite;
-  }
-
-  .ticker-item { display: flex; align-items: center; gap: 8px; }
-  .ticker-item .up { color: var(--green); }
-  .ticker-item .down { color: var(--red); }
-  
-  }
 </style>
 </head>
 <body>
@@ -299,230 +277,46 @@
     <div class="tagline">READ THE CHART · FIND THE GEM · STAY AHEAD</div>
   </div>
 
-<!-- Ticker -->
+  <!-- Ticker (fixed, no scroll) -->
   <div class="ticker">
     <div class="ticker-inner" id="ticker-inner">
-      <span class="ticker-item">로딩중...</span>
+      <span class="ticker-item" style="color:var(--text-dim);">로딩중...</span>
     </div>
   </div>
 
-<script>
-  const coins = [
-    { symbol: 'BTC', id: 'BTCUSDT' },
-    { symbol: 'ETH', id: 'ETHUSDT' },
-    { symbol: 'SOL', id: 'SOLUSDT' },
-    { symbol: 'XRP', id: 'XRPUSDT' },
-    { symbol: 'DOGE', id: 'DOGEUSDT' },
-  ];
-
-  function fetchPrices() {
-  fetch('https://api.binance.com/api/v3/ticker/24hr')
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      var html = '';
-      coins.forEach(function(coin) {
-        var ticker = data.find(function(d) { return d.symbol === coin.id; });
-        if (!ticker) return;
-        var price = parseFloat(ticker.lastPrice);
-        var change = parseFloat(ticker.priceChangePercent);
-        var isUp = change >= 0;
-        var arrow = isUp ? '▲' : '▼';
-        var cls = isUp ? 'up' : 'down';
-        var priceStr = price < 1 ? price.toFixed(4) : price.toLocaleString();
-        html += '<span class="ticker-item">' + coin.symbol + ' $' + priceStr + ' <span class="' + cls + '">' + arrow + ' ' + Math.abs(change).toFixed(2) + '%</span></span>';
-      });
-      document.getElementById('ticker-inner').innerHTML = html;
-    })
-    .catch(function(e) { console.error('가격 불러오기 실패', e); });
-}
-  }
-
-  let isExpanded = false;
-  let currentGainerTab = '24h';
-  let gainersData = { '24h': [], '7d': [], '30d': [] };
-
-  function switchGainerTab(tab) {
-    currentGainerTab = tab;
-    isExpanded = false;
-    ['24h', '7d', '30d'].forEach(t => {
-      const btn = document.getElementById('tab-' + t);
-      if (t === tab) {
-        btn.style.background = 'rgba(201,168,76,0.15)';
-        btn.style.color = '#C9A84C';
-        btn.style.borderColor = 'rgba(201,168,76,0.5)';
-      } else {
-        btn.style.background = 'transparent';
-        btn.style.color = '#888';
-        btn.style.borderColor = 'rgba(255,255,255,0.1)';
-      }
-    });
-    renderGainers(gainersData[tab].slice(0, 5));
-  }
-
-  function renderGainers(list) {
-    var html = '';
-    list.forEach(function(coin, i) {
-      var isUp = coin.change >= 0;
-      var cls = isUp ? 'up' : 'down';
-      var arrow = isUp ? '▲' : '▼';
-      var priceStr = coin.price >= 1000
-        ? coin.price.toLocaleString('en-US', { maximumFractionDigits: 2 })
-        : coin.price < 1 ? coin.price.toFixed(4) : coin.price.toFixed(2);
-      html += '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">'
-        + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--text-dim);width:20px;">' + (i + 1) + '</div>'
-        + '<div style="flex:1;"><div style="font-size:14px;font-weight:700;">' + coin.symbol + '</div>'
-        + '<div style="font-size:11px;color:var(--text-dim);font-family:\'JetBrains Mono\',monospace;">$' + priceStr + '</div></div>'
-        + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:13px;color:var(--' + cls + ');">' + arrow + ' ' + Math.abs(coin.change).toFixed(2) + '%</div>'
-        + '</div>';
-    });
-    html += '<div onclick="toggleGainers()" style="text-align:center;padding:10px;cursor:pointer;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:#C9A84C;letter-spacing:0.2em;border:1px solid rgba(201,168,76,0.5);border-radius:3px;margin-top:4px;">'
-      + (isExpanded ? '▲ 접기' : '▼ 더 보기') + '</div>';
-    document.getElementById('gainers-list').innerHTML = html;
-  }
-
-  function toggleGainers() {
-    isExpanded = !isExpanded;
-    renderGainers(isExpanded ? bybitAllData.slice(0, 20) : bybitAllData.slice(0, 5));
-  }
-
-  fetchPrices();
-  setInterval(fetchPrices, 60000);
-
-</script>
-
-<!-- Bybit 선물 상승률 TOP 20 -->
-<style>
-  .bybit-badge { font-size: 11px; padding: 3px 8px; border-radius: 20px; background: rgba(0,200,100,0.15); color: #00c864; }
-  .bybit-refresh-btn { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; padding: 6px 16px; border-radius: 3px; border: 1px solid rgba(201,168,76,0.5); background: transparent; color: #888; cursor: pointer; }
-  .bybit-refresh-btn:hover { background: rgba(128,128,128,0.1); }
-  .bybit-table-wrap { border: 0.5px solid rgba(128,128,128,0.2); border-radius: 12px; overflow: hidden; }
-  .bybit-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .bybit-table th { padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 500; background: rgba(128,128,128,0.08); border-bottom: 0.5px solid rgba(128,128,128,0.2); }
-  .bybit-table th.num { text-align: right; }
-  .bybit-table td { padding: 9px 12px; border-bottom: 0.5px solid rgba(128,128,128,0.12); }
-  .bybit-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  .bybit-table tr:last-child td { border-bottom: none; }
-  .bybit-table tr:hover td { background: rgba(128,128,128,0.05); }
-  .bybit-rank { font-size: 12px; opacity: 0.4; }
-  .bybit-symbol { font-weight: 500; font-size: 13px; }
-  .bybit-pair { font-size: 11px; opacity: 0.4; }
-  .bybit-up { color: #00c864; }
-  .bybit-vol { opacity: 0.5; }
-  .bybit-loading { text-align: center; padding: 2rem; opacity: 0.5; font-size: 14px; }
-  .bybit-error { text-align: center; padding: 1.5rem; color: #e24b4a; font-size: 13px; }
-  .bybit-last-updated { font-size: 11px; opacity: 0.35; margin-top: 8px; text-align: right; }
-  .bybit-toggle-btn { display: block; width: 100%; margin-top: 10px; padding: 8px; font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em; border-radius: 3px; border: 1px solid rgba(201,168,76,0.5); background: transparent; color: #C9A84C; cursor: pointer; text-align: center; }
-  .bybit-toggle-btn:hover { background: rgba(201,168,76,0.08); }
-  .bybit-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
-</style>
-
-<div class="section">
-  <div class="bybit-header-row">
-    <div class="section-label" style="margin-bottom:0;">BYBIT 선물 상승률 TOP 20 <span class="bybit-badge">LIVE</span></div>
-    <button class="bybit-refresh-btn" onclick="bybitFetchData()">새로고침</button>
+  <!-- Bybit 선물 상승률 TOP 20 -->
+  <div class="section">
+    <div class="section-header-row">
+      <div class="section-label">BYBIT 선물 상승률 TOP 20 <span class="badge badge-live" style="margin-left:8px;">LIVE</span></div>
+      <button class="refresh-btn" onclick="bybitFetch()">새로고침</button>
+    </div>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:32px">#</th>
+            <th>심볼</th>
+            <th class="r">현재가</th>
+            <th class="r">24h 등락률</th>
+            <th class="r">거래량(USDT)</th>
+          </tr>
+        </thead>
+        <tbody id="bybit-tbody-top"></tbody>
+        <tbody id="bybit-tbody-extra" style="display:none;"></tbody>
+      </table>
+    </div>
+    <button class="toggle-btn" id="bybit-toggle-btn" onclick="bybitToggle()">▼ 더 보기 (TOP 20)</button>
+    <div class="last-updated" id="bybit-updated"></div>
   </div>
-  <div class="bybit-table-wrap">
-    <table class="bybit-table">
-      <thead>
-        <tr>
-          <th style="width:32px">#</th>
-          <th>심볼</th>
-          <th class="num">현재가</th>
-          <th class="num">24h 등락률</th>
-          <th class="num">거래량(USDT)</th>
-        </tr>
-      </thead>
-      <tbody id="bybit-tbody-top"></tbody>
-      <tbody id="bybit-tbody-extra" style="display:none;"></tbody>
-    </table>
+
+  <!-- Top Gainers (Bybit 데이터 재활용) -->
+  <div class="section">
+    <div class="section-label">Top Gainers</div>
+    <div id="gainers-list">
+      <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
+    </div>
   </div>
-  <button class="bybit-toggle-btn" id="bybit-toggle-btn" onclick="bybitToggle()">▼ 더 보기 (TOP 20)</button>
-  <div class="bybit-last-updated" id="bybit-last-updated"></div>
-</div>
 
-<script>
-  var bybitAllData = [];
-  var bybitExpanded = false;
-
-  function bybitFmtVol(v) {
-    if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
-    if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
-    if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
-    return v.toFixed(0);
-  }
-
-  function bybitFmtPrice(p) {
-    if (p >= 1000) return '$' + p.toLocaleString('en-US', { maximumFractionDigits: 2 });
-    if (p >= 1) return '$' + p.toFixed(4);
-    return '$' + p.toFixed(6);
-  }
-
-  function bybitMakeRow(t, i) {
-    return '<tr>'
-      + '<td class="bybit-rank">' + (i + 1) + '</td>'
-      + '<td><span class="bybit-symbol">' + t.symbol + '</span><br><span class="bybit-pair">USDT 선물</span></td>'
-      + '<td class="num">' + bybitFmtPrice(t.price) + '</td>'
-      + '<td class="num bybit-up">+' + t.change.toFixed(2) + '%</td>'
-      + '<td class="num bybit-vol">' + bybitFmtVol(t.volume) + '</td>'
-      + '</tr>';
-  }
-
-  function bybitRender() {
-    var topRows = bybitAllData.slice(0, 7).map(function(t, i) { return bybitMakeRow(t, i); }).join('');
-    var extraRows = bybitAllData.slice(7, 20).map(function(t, i) { return bybitMakeRow(t, i + 7); }).join('');
-    document.getElementById('bybit-tbody-top').innerHTML = topRows || '<tr><td colspan="5" class="bybit-loading">데이터 없음</td></tr>';
-    document.getElementById('bybit-tbody-extra').innerHTML = extraRows;
-    renderGainers(bybitAllData.slice(0, 5)); // 추가
-  }
-
-  function bybitToggle() {
-    bybitExpanded = !bybitExpanded;
-    var extra = document.getElementById('bybit-tbody-extra');
-    var btn = document.getElementById('bybit-toggle-btn');
-    extra.style.display = bybitExpanded ? 'table-row-group' : 'none';
-    btn.textContent = bybitExpanded ? '▲ 접기' : '▼ 더 보기 (TOP 20)';
-  }
-
-  function bybitFetchData() {
-    fetch('https://api.bybit.com/v5/market/tickers?category=linear')
-      .then(function(res) { return res.json(); })
-      .then(function(json) {
-        if (json.retCode !== 0) throw new Error(json.retMsg);
-        bybitAllData = json.result.list
-          .filter(function(t) { return t.symbol.endsWith('USDT'); })
-          .map(function(t) {
-            return {
-              symbol: t.symbol.replace('USDT', ''),
-              price: parseFloat(t.lastPrice),
-              change: parseFloat(t.price24hPcnt) * 100,
-              volume: parseFloat(t.turnover24h)
-            };
-          })
-          .filter(function(t) { return !isNaN(t.change) && t.change > 0; })
-          .sort(function(a, b) { return b.change - a.change; })
-          .slice(0, 20);
-        document.getElementById('bybit-last-updated').textContent =
-          '마지막 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
-        bybitRender();
-      })
-      .catch(function(e) {
-        document.getElementById('bybit-tbody-top').innerHTML =
-          '<tr><td colspan="5" class="bybit-error">데이터 로드 실패: ' + e.message + '</td></tr>';
-      });
-  }
-
-  bybitFetchData();
-  setInterval(bybitFetchData, 30000);
-</script>
-  
-<!-- 상승률 순위 -->
-<div class="section">
-  <div class="section-label">Top Gainers</div>
-  <div id="gainers-list">
-    <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
-  </div>
-</div>
-  
   <!-- 거래소 레퍼럴 -->
   <div class="section">
     <div class="section-label">Partner Links</div>
@@ -568,33 +362,29 @@
       <span class="badge badge-live">LIVE</span>
       <span class="card-arrow">→</span>
     </a>
-
-    <!-- 대회 추가 시 여기에 복붙 -->
   </div>
-
-  <!-- 네프콘 채널 -->
 
   <!-- SNS 채널 -->
   <div class="section">
     <div class="section-label">SNS Channels</div>
     <div style="display:flex;justify-content:center;gap:20px;padding:20px;background:var(--surface);border:1px solid var(--border);border-radius:4px;flex-wrap:wrap;">
 
-      <a href="https://t.me/richard_hwn1" target="_blank" rel="noopener" title="Telegram" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+      <a href="https://t.me/richard_hwn1" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
         <img src="https://wiki1.kr/images/3/31/%ED%85%94%EB%A0%88%EA%B7%B8%EB%9E%A8_%EB%A1%9C%EA%B3%A0.png" style="width:48px;height:48px;border-radius:12px;">
         <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">TELEGRAM</span>
       </a>
 
-      <a href="https://www.youtube.com/@richard_hwn" target="_blank" rel="noopener" title="YouTube" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+      <a href="https://www.youtube.com/@richard_hwn" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
         <img src="https://img.freepik.com/premium-vector/red-youtube-logo-social-media-logo_197792-1803.jpg?semt=ais_hybrid&w=740&q=80" style="width:48px;height:48px;border-radius:12px;">
         <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">YOUTUBE</span>
       </a>
 
-      <a href="https://x.com/richard_hwn" target="_blank" rel="noopener" title="Twitter / X" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+      <a href="https://x.com/richard_hwn" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
         <img src="https://img.freepik.com/free-vector/new-2023-twitter-logo-x-icon-design_1017-45418.jpg?semt=ais_incoming&w=740&q=80" style="width:48px;height:48px;border-radius:12px;">
         <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">TWITTER</span>
       </a>
 
-      <a href="https://www.threads.com/@richard_hwn" target="_blank" rel="noopener" title="Threads" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
+      <a href="https://www.threads.com/@richard_hwn" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
         <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Threads_%28app%29.png" style="width:48px;height:48px;border-radius:12px;">
         <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">THREADS</span>
       </a>
@@ -609,5 +399,153 @@
   </div>
 
 </div>
+
+<script>
+  // ── 공통 유틸 ──────────────────────────────────────
+  var COINS = [
+    { symbol: 'BTC', id: 'BTCUSDT' },
+    { symbol: 'ETH', id: 'ETHUSDT' },
+    { symbol: 'SOL', id: 'SOLUSDT' },
+    { symbol: 'XRP', id: 'XRPUSDT' },
+    { symbol: 'DOGE', id: 'DOGEUSDT' }
+  ];
+
+  function fmtPrice(p) {
+    if (p >= 1000) return '$' + p.toLocaleString('en-US', { maximumFractionDigits: 2 });
+    if (p >= 1)    return '$' + p.toFixed(4);
+    return '$' + p.toFixed(6);
+  }
+
+  function fmtVol(v) {
+    if (v >= 1e9) return (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return (v / 1e3).toFixed(0) + 'K';
+    return v.toFixed(0);
+  }
+
+  // ── 티커 (Binance, 고정) ───────────────────────────
+  function fetchTicker() {
+    fetch('https://api.binance.com/api/v3/ticker/24hr')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var html = '';
+        COINS.forEach(function(coin) {
+          var t = data.find(function(d) { return d.symbol === coin.id; });
+          if (!t) return;
+          var price = parseFloat(t.lastPrice);
+          var change = parseFloat(t.priceChangePercent);
+          var isUp = change >= 0;
+          var cls = isUp ? 'up' : 'down';
+          var arrow = isUp ? '▲' : '▼';
+          var priceStr = price < 1 ? price.toFixed(4) : price.toLocaleString();
+          html += '<span class="ticker-item">'
+            + '<span style="color:var(--text);">' + coin.symbol + '</span>'
+            + ' $' + priceStr
+            + ' <span class="' + cls + '">' + arrow + ' ' + Math.abs(change).toFixed(2) + '%</span>'
+            + '</span>';
+        });
+        document.getElementById('ticker-inner').innerHTML = html || '<span style="color:var(--text-dim);">데이터 없음</span>';
+      })
+      .catch(function() {
+        document.getElementById('ticker-inner').innerHTML = '<span style="color:var(--text-dim);">불러오기 실패</span>';
+      });
+  }
+
+  // ── Bybit 선물 ─────────────────────────────────────
+  var bybitData = [];
+  var bybitExpanded = false;
+  var gainersExpanded = false;
+
+  function bybitMakeRow(t, i) {
+    return '<tr>'
+      + '<td class="tbl-rank">' + (i + 1) + '</td>'
+      + '<td><span style="font-weight:700;font-size:13px;">' + t.symbol + '</span><br>'
+      + '<span style="font-size:11px;opacity:0.4;font-family:\'JetBrains Mono\',monospace;">USDT 선물</span></td>'
+      + '<td class="r">' + fmtPrice(t.price) + '</td>'
+      + '<td class="r tbl-up">+' + t.change.toFixed(2) + '%</td>'
+      + '<td class="r tbl-dim">' + fmtVol(t.volume) + '</td>'
+      + '</tr>';
+  }
+
+  function bybitRender() {
+    var topRows = bybitData.slice(0, 7).map(function(t, i) { return bybitMakeRow(t, i); }).join('');
+    var extraRows = bybitData.slice(7, 20).map(function(t, i) { return bybitMakeRow(t, i + 7); }).join('');
+    document.getElementById('bybit-tbody-top').innerHTML = topRows
+      || '<tr><td colspan="5" class="tbl-loading">데이터 없음</td></tr>';
+    document.getElementById('bybit-tbody-extra').innerHTML = extraRows;
+    renderGainers();
+  }
+
+  function bybitToggle() {
+    bybitExpanded = !bybitExpanded;
+    var extra = document.getElementById('bybit-tbody-extra');
+    var btn = document.getElementById('bybit-toggle-btn');
+    extra.style.display = bybitExpanded ? 'table-row-group' : 'none';
+    btn.textContent = bybitExpanded ? '▲ 접기' : '▼ 더 보기 (TOP 20)';
+  }
+
+  function bybitFetch() {
+    fetch('https://api.bybit.com/v5/market/tickers?category=linear')
+      .then(function(r) { return r.json(); })
+      .then(function(json) {
+        if (json.retCode !== 0) throw new Error(json.retMsg);
+        bybitData = json.result.list
+          .filter(function(t) { return t.symbol.endsWith('USDT'); })
+          .map(function(t) {
+            return {
+              symbol: t.symbol.replace('USDT', ''),
+              price: parseFloat(t.lastPrice),
+              change: parseFloat(t.price24hPcnt) * 100,
+              volume: parseFloat(t.turnover24h)
+            };
+          })
+          .filter(function(t) { return !isNaN(t.change) && t.change > 0; })
+          .sort(function(a, b) { return b.change - a.change; })
+          .slice(0, 20);
+        document.getElementById('bybit-updated').textContent =
+          '마지막 업데이트: ' + new Date().toLocaleTimeString('ko-KR');
+        bybitRender();
+      })
+      .catch(function(e) {
+        document.getElementById('bybit-tbody-top').innerHTML =
+          '<tr><td colspan="5" class="tbl-error">데이터 로드 실패: ' + e.message + '</td></tr>';
+      });
+  }
+
+  // ── Top Gainers (Bybit 데이터 재활용) ──────────────
+  function renderGainers() {
+    var list = gainersExpanded ? bybitData.slice(0, 20) : bybitData.slice(0, 5);
+    var html = '';
+    list.forEach(function(coin, i) {
+      var priceStr = coin.price >= 1000
+        ? coin.price.toLocaleString('en-US', { maximumFractionDigits: 2 })
+        : coin.price < 1 ? coin.price.toFixed(4) : coin.price.toFixed(2);
+      html += '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">'
+        + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--text-dim);width:20px;">' + (i + 1) + '</div>'
+        + '<div style="flex:1;">'
+        + '<div style="font-size:14px;font-weight:700;">' + coin.symbol + '</div>'
+        + '<div style="font-size:11px;color:var(--text-dim);font-family:\'JetBrains Mono\',monospace;">$' + priceStr + '</div>'
+        + '</div>'
+        + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:13px;color:#00c864;">▲ ' + coin.change.toFixed(2) + '%</div>'
+        + '</div>';
+    });
+    html += '<div onclick="toggleGainers()" style="text-align:center;padding:10px;cursor:pointer;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:#C9A84C;letter-spacing:0.2em;border:1px solid rgba(201,168,76,0.5);border-radius:3px;margin-top:4px;">'
+      + (gainersExpanded ? '▲ 접기' : '▼ 더 보기') + '</div>';
+    document.getElementById('gainers-list').innerHTML = html;
+  }
+
+  function toggleGainers() {
+    gainersExpanded = !gainersExpanded;
+    renderGainers();
+  }
+
+  // ── 초기 실행 ──────────────────────────────────────
+  fetchTicker();
+  setInterval(fetchTicker, 60000);
+
+  bybitFetch();
+  setInterval(bybitFetch, 30000);
+</script>
+
 </body>
 </html>
