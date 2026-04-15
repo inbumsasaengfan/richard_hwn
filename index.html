@@ -266,6 +266,10 @@
   .card:nth-child(2) { animation-delay: 0.10s; }
   .card:nth-child(3) { animation-delay: 0.15s; }
   .card:nth-child(4) { animation-delay: 0.20s; }
+
+  .gainer-tab { font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;cursor:pointer; }
+  .active-tab { background:rgba(201,168,76,0.15);color:#C9A84C;border:1px solid rgba(201,168,76,0.5); }
+  .inactive-tab { background:transparent;color:#888;border:1px solid rgba(255,255,255,0.1); }
 </style>
 </head>
 <body>
@@ -309,9 +313,14 @@
     <div class="last-updated" id="bybit-updated"></div>
   </div>
 
-  <!-- Top Gainers (Bybit 데이터 재활용) -->
+  <!-- Top Gainers -->
   <div class="section">
     <div class="section-label">Top Gainers</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">
+      <button id="tab-24h" onclick="switchGainerTab('24h')" class="gainer-tab active-tab">24H</button>
+      <button id="tab-7d" onclick="switchGainerTab('7d')" class="gainer-tab inactive-tab">7D</button>
+      <button id="tab-30d" onclick="switchGainerTab('30d')" class="gainer-tab inactive-tab">30D</button>
+    </div>
     <div id="gainers-list">
       <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
     </div>
@@ -512,21 +521,66 @@
       });
   }
 
-  // ── Top Gainers (Bybit 데이터 재활용) ──────────────
+  // ── Top Gainers (CoinGecko, 탭별 lazy fetch) ──────
+  var gainersData = { '24h': [], '7d': [], '30d': [] };
+  var gainersLoaded = { '24h': false, '7d': false, '30d': false };
+  var currentTab = '24h';
+  var gainersExpanded = false;
+
+  function switchGainerTab(tab) {
+    currentTab = tab;
+    gainersExpanded = false;
+    ['24h', '7d', '30d'].forEach(function(t) {
+      var btn = document.getElementById('tab-' + t);
+      btn.className = 'gainer-tab ' + (t === tab ? 'active-tab' : 'inactive-tab');
+    });
+    if (gainersLoaded[tab]) {
+      renderGainers();
+    } else {
+      document.getElementById('gainers-list').innerHTML =
+        '<div style="color:var(--text-dim);font-family:\'JetBrains Mono\',monospace;font-size:12px;padding:16px 0;">로딩중...</div>';
+      fetchGainerTab(tab);
+    }
+  }
+
+  function fetchGainerTab(tab) {
+    fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=200&page=1&sparkline=false&price_change_percentage=24h,7d,30d')
+      .then(function(r) { return r.json(); })
+      .then(function(markets) {
+        gainersData['24h'] = [...markets].sort(function(a,b){ return b.price_change_percentage_24h - a.price_change_percentage_24h; }).slice(0, 20);
+        gainersData['7d']  = [...markets].sort(function(a,b){ return b.price_change_percentage_7d_in_currency - a.price_change_percentage_7d_in_currency; }).slice(0, 20);
+        gainersData['30d'] = [...markets].sort(function(a,b){ return b.price_change_percentage_30d_in_currency - a.price_change_percentage_30d_in_currency; }).slice(0, 20);
+        gainersLoaded['24h'] = gainersLoaded['7d'] = gainersLoaded['30d'] = true;
+        renderGainers();
+      })
+      .catch(function() {
+        document.getElementById('gainers-list').innerHTML =
+          '<div style="color:#e24b4a;font-family:\'JetBrains Mono\',monospace;font-size:12px;padding:16px 0;">데이터 로드 실패 — 잠시 후 다시 시도해주세요</div>';
+      });
+  }
+
   function renderGainers() {
-    var list = gainersExpanded ? bybitData.slice(0, 20) : bybitData.slice(0, 5);
+    var list = gainersData[currentTab];
+    var show = gainersExpanded ? list.slice(0, 20) : list.slice(0, 5);
     var html = '';
-    list.forEach(function(coin, i) {
-      var priceStr = coin.price >= 1000
-        ? coin.price.toLocaleString('en-US', { maximumFractionDigits: 2 })
-        : coin.price < 1 ? coin.price.toFixed(4) : coin.price.toFixed(2);
+    show.forEach(function(coin, i) {
+      var change = currentTab === '24h' ? coin.price_change_percentage_24h
+                 : currentTab === '7d'  ? coin.price_change_percentage_7d_in_currency
+                 : coin.price_change_percentage_30d_in_currency;
+      if (change == null) return;
+      var isUp = change >= 0;
+      var priceStr = coin.current_price >= 1000
+        ? coin.current_price.toLocaleString('en-US', { maximumFractionDigits: 2 })
+        : coin.current_price < 1 ? coin.current_price.toFixed(4) : coin.current_price.toFixed(2);
       html += '<div style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">'
         + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--text-dim);width:20px;">' + (i + 1) + '</div>'
+        + '<img src="' + coin.image + '" style="width:24px;height:24px;border-radius:50%;">'
         + '<div style="flex:1;">'
-        + '<div style="font-size:14px;font-weight:700;">' + coin.symbol + '</div>'
+        + '<div style="font-size:14px;font-weight:700;">' + coin.symbol.toUpperCase() + '</div>'
         + '<div style="font-size:11px;color:var(--text-dim);font-family:\'JetBrains Mono\',monospace;">$' + priceStr + '</div>'
         + '</div>'
-        + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:13px;color:#00c864;">▲ ' + coin.change.toFixed(2) + '%</div>'
+        + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:13px;color:' + (isUp ? '#00c864' : '#e24b4a') + ';">'
+        + (isUp ? '▲' : '▼') + ' ' + Math.abs(change).toFixed(2) + '%</div>'
         + '</div>';
     });
     html += '<div onclick="toggleGainers()" style="text-align:center;padding:10px;cursor:pointer;font-family:\'JetBrains Mono\',monospace;font-size:11px;color:#C9A84C;letter-spacing:0.2em;border:1px solid rgba(201,168,76,0.5);border-radius:3px;margin-top:4px;">'
@@ -545,6 +599,9 @@
 
   bybitFetch();
   setInterval(bybitFetch, 30000);
+
+  fetchGainerTab('24h'); 
+  
 </script>
 
 </body>
