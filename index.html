@@ -174,7 +174,7 @@
   /* Ticker (fixed) */
   .ticker {
     font-family: 'Pretendard', monospace;
-    font-size: 15px;
+    font-size: 17px;
     color: var(--text-dim);
     margin-bottom: 48px;
     border-top: 1px solid var(--border);
@@ -277,7 +277,7 @@
     </div>
   </div>
 
-  <!-- Bybit 선물 상승률 TOP 7 -->
+  <!-- Bybit Futures Gainers TOP 7 -->
   <div class="section">
     <div class="section-header-row">
       <div class="section-label">BYBIT 선물 상승률 TOP 7 <span class="badge badge-live" style="margin-left:8px;">LIVE</span></div>
@@ -496,7 +496,7 @@
   function bybitMakeRow(t, i) {
     return '<tr style="cursor:pointer;" onclick="window.open(\'https://www.tradingview.com/chart/?symbol=BYBIT:' + t.symbol + 'USDT.P\', \'_blank\')">'
       + '<td class="tbl-rank">' + (i + 1) + '</td>'
-      + '<td><span style="font-weight:700;font-size:13px;">' + t.symbol + '</span><br>'
+      + '<td><span style="font-weight:700;font-size:15px;">' + t.symbol + '</span><br>'
       + '<span style="font-size:11px;opacity:0.4;font-family:\'Pretendard\',monospace;">USDT 선물</span></td>'
       + '<td class="r">' + fmtPrice(t.price) + '</td>'
       + '<td class="r tbl-up">+' + t.change.toFixed(2) + '%</td>'
