@@ -520,13 +520,11 @@
     var extraRows = bybitData.slice(7, 20).map(function(t, i) { return bybitMakeRow(t, i + 7); }).join('');
     document.getElementById('bybit-tbody-top').innerHTML = topRows
       || '<tr><td colspan="5" class="tbl-loading">데이터 없음</td></tr>';
-    document.getElementById('bybit-tbody-extra').innerHTML = extraRows;
     renderGainers();
   }
 
   function bybitToggle() {
     bybitExpanded = !bybitExpanded;
-    var extra = document.getElementById('bybit-tbody-extra');
     var btn = document.getElementById('bybit-toggle-btn');
     extra.style.display = bybitExpanded ? 'table-row-group' : 'none';
     btn.textContent = bybitExpanded ? '▲ 접기' : '▼ 더 보기 (TOP 20)';
