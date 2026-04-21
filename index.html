@@ -12,13 +12,13 @@
     --gold-light: #F0C96B;
     --gold-dim: rgba(201,168,76,0.15);
     --bg: #0D0E14;
-    --surface: #222840;
-    --surface2: #2A3050;
-    --border: rgba(201,168,76,0.2);
+    --surface: #13141A;
+    --surface2: #1A1B24;
+    --border: rgba(255,255,255,0.08);
     --text: #E8E4DC;
     --text-dim: #8A8FA8;
-    --red: #E05252;
-    --green: #52C78A;
+    --red: #D24F4F;
+    --green: #4B8DD4;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -29,18 +29,6 @@
     font-family: 'Pretendard', 'Syne', 'Noto Sans KR', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
   }
 
   body::after {
@@ -91,7 +79,7 @@
 
   .tagline {
     margin-top: 16px;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Pretendard', monospace;
     font-size: 15px;
     letter-spacing: 0.3em;
     color: var(--text-dim);
@@ -101,7 +89,7 @@
   /* Section label */
   .section-label {
     font-weight: bold;
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Pretendard', monospace;
     font-size: 16px;
     letter-spacing: 0.25em;
     color: var(--gold);
@@ -165,13 +153,13 @@
 
   .card-info { flex: 1; }
   .card-name { font-size: 17px; font-weight: 700; letter-spacing: 0.03em; margin-bottom: 3px; }
-  .card-desc { font-size: 15px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+  .card-desc { font-size: 15px; color: var(--text-dim); font-family: 'Pretendard', monospace; }
   .card-arrow { color: var(--gold); font-size: 16px; opacity: 0.5; transition: opacity 0.2s, transform 0.2s; }
   .card:hover .card-arrow { opacity: 1; transform: translateX(3px); }
 
   /* Badge */
   .badge {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Pretendard', monospace;
     font-size: 9px;
     letter-spacing: 0.1em;
     padding: 3px 7px;
@@ -185,7 +173,7 @@
 
   /* Ticker (fixed) */
   .ticker {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Pretendard', monospace;
     font-size: 13px;
     color: var(--text-dim);
     margin-bottom: 48px;
@@ -201,8 +189,8 @@
   }
 
   .ticker-item { display: flex; align-items: center; gap: 6px; }
-  .up { color: var(--green); }
-  .down { color: var(--red); }
+  .up { color: #D24F4F; }
+  .down { color: #4B8DD4; }
 
   /* Table shared */
   .data-table-wrap { border: 0.5px solid rgba(128,128,128,0.2); border-radius: 12px; overflow: hidden; }
@@ -210,17 +198,17 @@
   .data-table th {
     padding: 8px 12px; text-align: left; font-size: 11px; font-weight: 500;
     background: rgba(128,128,128,0.08); border-bottom: 0.5px solid rgba(128,128,128,0.2);
-    font-family: 'JetBrains Mono', monospace; color: var(--text-dim);
+    font-family: 'Pretendard', monospace; color: var(--text-dim);
   }
   .data-table th.r { text-align: right; }
   .data-table td { padding: 9px 12px; border-bottom: 0.5px solid rgba(128,128,128,0.12); }
-  .data-table td.r { text-align: right; font-variant-numeric: tabular-nums; font-family: 'JetBrains Mono', monospace; }
+  .data-table td.r { text-align: right; font-variant-numeric: tabular-nums; font-family: 'Pretendard', monospace; }
   .data-table tr:last-child td { border-bottom: none; }
   .data-table tr:hover td { background: rgba(128,128,128,0.05); }
-  .tbl-rank { font-size: 12px; opacity: 0.4; font-family: 'JetBrains Mono', monospace; }
-  .tbl-up { color: #00c864; font-family: 'JetBrains Mono', monospace; }
-  .tbl-down { color: #e24b4a; font-family: 'JetBrains Mono', monospace; }
-  .tbl-dim { opacity: 0.5; font-size: 12px; font-family: 'JetBrains Mono', monospace; }
+  .tbl-rank { font-size: 12px; opacity: 0.4; font-family: 'Pretendard', monospace; }
+  .tbl-up { color: #D24F4F; font-family: 'Pretendard', monospace; }
+  .tbl-down { color: #4B8DD4; font-family: 'Pretendard', monospace; }
+  .tbl-dim { opacity: 0.5; font-size: 12px; font-family: 'Pretendard', monospace; }
   .tbl-loading { text-align: center; padding: 2rem; opacity: 0.5; font-size: 14px; }
   .tbl-error { text-align: center; padding: 1.5rem; color: #e24b4a; font-size: 13px; }
 
@@ -229,7 +217,7 @@
   .section-header-row .section-label { margin-bottom: 0; flex: 1; }
 
   .refresh-btn {
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
+    font-family: 'Pretendard', monospace; font-size: 11px; letter-spacing: 0.1em;
     padding: 6px 16px; border-radius: 3px; border: 1px solid rgba(201,168,76,0.5);
     background: transparent; color: #888; cursor: pointer;
   }
@@ -237,13 +225,13 @@
 
   .toggle-btn {
     display: block; width: 100%; margin-top: 10px; padding: 8px;
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.1em;
+    font-family: 'Pretendard', monospace; font-size: 11px; letter-spacing: 0.1em;
     border-radius: 3px; border: 1px solid rgba(201,168,76,0.5);
     background: transparent; color: #C9A84C; cursor: pointer; text-align: center;
   }
   .toggle-btn:hover { background: rgba(201,168,76,0.08); }
 
-  .last-updated { font-size: 11px; opacity: 0.35; margin-top: 8px; text-align: right; font-family: 'JetBrains Mono', monospace; }
+  .last-updated { font-size: 11px; opacity: 0.35; margin-top: 8px; text-align: right; font-family: 'Pretendard', monospace; }
 
   /* Footer */
   .footer {
@@ -251,7 +239,7 @@
     margin-top: 64px;
     padding-top: 32px;
     border-top: 1px solid var(--border);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: 'Pretendard', monospace;
     font-size: 13px;
     color: var(--text-dim);
     letter-spacing: 0.1em;
@@ -268,7 +256,7 @@
   .card:nth-child(3) { animation-delay: 0.15s; }
   .card:nth-child(4) { animation-delay: 0.20s; }
 
-  .gainer-tab { font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;cursor:pointer; }
+  .gainer-tab { font-family:'Pretendard',monospace;font-size:11px;letter-spacing:0.2em;padding:6px 16px;border-radius:3px;cursor:pointer; }
   .active-tab { background:rgba(201,168,76,0.15);color:#C9A84C;border:1px solid rgba(201,168,76,0.5); }
   .inactive-tab { background:transparent;color:#888;border:1px solid rgba(255,255,255,0.1); }
 </style>
@@ -321,7 +309,7 @@
       <button id="tab-30d" onclick="switchGainerTab('30d')" class="gainer-tab inactive-tab">30D</button>
     </div>
     <div id="gainers-list">
-      <div style="color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
+      <div style="color:var(--text-dim);font-family:'Pretendard',monospace;font-size:12px;padding:16px 0;">로딩중...</div>
     </div>
   </div>
 
@@ -395,7 +383,7 @@
         <strong>실시간 차트 분석 및 관심 종목 공유, 매매 관점 공유, 정기 라이브, 차트 스터디까지</strong> — 가입자 전용 혜택입니다.
       </div>
       <div style="margin-top:auto;">
-        <a href="https://t.me/richard_hwn" target="_blank" style="display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:8px 20px;border-radius:3px;border:1px solid rgba(201,168,76,0.5);background:rgba(201,168,76,0.15);color:#C9A84C;cursor:pointer;text-decoration:none;">비공개방 입장하기 →</a>
+        <a href="https://t.me/richard_hwn" target="_blank" style="display:inline-block;font-family:'Pretendard',monospace;font-size:11px;letter-spacing:0.2em;padding:8px 20px;border-radius:3px;border:1px solid rgba(201,168,76,0.5);background:rgba(201,168,76,0.15);color:#C9A84C;cursor:pointer;text-decoration:none;">비공개방 입장하기 →</a>
       </div>
     </div>
 
@@ -406,7 +394,7 @@
         텔레그램으로 빠르게 답변드립니다.
       </div>
       <div style="margin-top:auto;">
-        <a href="https://t.me/richard_hwn" target="_blank" style="display:inline-block;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.2em;padding:8px 20px;border-radius:3px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#888;cursor:pointer;text-decoration:none;">문의하기 →</a>
+        <a href="https://t.me/richard_hwn" target="_blank" style="display:inline-block;font-family:'Pretendard',monospace;font-size:11px;letter-spacing:0.2em;padding:8px 20px;border-radius:3px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#888;cursor:pointer;text-decoration:none;">문의하기 →</a>
       </div>
     </div>
 
@@ -420,22 +408,22 @@
 
       <a href="https://t.me/richard_hwn1" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
         <img src="https://wiki1.kr/images/3/31/%ED%85%94%EB%A0%88%EA%B7%B8%EB%9E%A8_%EB%A1%9C%EA%B3%A0.png" style="width:48px;height:48px;border-radius:12px;">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">TELEGRAM</span>
+        <span style="font-family:'Pretendard',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">TELEGRAM</span>
       </a>
 
       <a href="https://www.youtube.com/@richard_hwn" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
         <img src="https://img.freepik.com/premium-vector/red-youtube-logo-social-media-logo_197792-1803.jpg?semt=ais_hybrid&w=740&q=80" style="width:48px;height:48px;border-radius:12px;">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">YOUTUBE</span>
+        <span style="font-family:'Pretendard',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">YOUTUBE</span>
       </a>
 
       <a href="https://x.com/richard_hwn" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
         <img src="https://img.freepik.com/free-vector/new-2023-twitter-logo-x-icon-design_1017-45418.jpg?semt=ais_incoming&w=740&q=80" style="width:48px;height:48px;border-radius:12px;">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">TWITTER</span>
+        <span style="font-family:'Pretendard',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">TWITTER</span>
       </a>
 
       <a href="https://www.threads.com/@richard_hwn" target="_blank" rel="noopener" style="display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform='translateY(0)'">
         <img src="https://upload.wikimedia.org/wikipedia/commons/d/db/Threads_%28app%29.png" style="width:48px;height:48px;border-radius:12px;">
-        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">THREADS</span>
+        <span style="font-family:'Pretendard',monospace;font-size:10px;color:var(--text-dim);letter-spacing:0.1em;">THREADS</span>
       </a>
 
     </div>
@@ -509,7 +497,7 @@
     return '<tr style="cursor:pointer;" onclick="window.open(\'https://www.tradingview.com/chart/?symbol=BYBIT:' + t.symbol + 'USDT.P\', \'_blank\')">'
       + '<td class="tbl-rank">' + (i + 1) + '</td>'
       + '<td><span style="font-weight:700;font-size:13px;">' + t.symbol + '</span><br>'
-      + '<span style="font-size:11px;opacity:0.4;font-family:\'JetBrains Mono\',monospace;">USDT 선물</span></td>'
+      + '<span style="font-size:11px;opacity:0.4;font-family:\'Pretendard\',monospace;">USDT 선물</span></td>'
       + '<td class="r">' + fmtPrice(t.price) + '</td>'
       + '<td class="r tbl-up">+' + t.change.toFixed(2) + '%</td>'
       + '<td class="r tbl-dim">' + fmtVol(t.volume) + '</td>'
@@ -576,7 +564,7 @@
       renderGainers();
     } else {
       document.getElementById('gainers-list').innerHTML =
-        '<div style="color:var(--text-dim);font-family:\'JetBrains Mono\',monospace;font-size:12px;padding:16px 0;">로딩중...</div>';
+        '<div style="color:var(--text-dim);font-family:\'Pretendard\',monospace;font-size:12px;padding:16px 0;">로딩중...</div>';
       fetchGainerTab(tab);
     }
   }
@@ -593,7 +581,7 @@
       })
       .catch(function() {
         document.getElementById('gainers-list').innerHTML =
-          '<div style="color:#e24b4a;font-family:\'JetBrains Mono\',monospace;font-size:12px;padding:16px 0;">데이터 로드 실패 — 잠시 후 다시 시도해주세요</div>';
+          '<div style="color:#e24b4a;font-family:\'Pretendard\',monospace;font-size:12px;padding:16px 0;">데이터 로드 실패 — 잠시 후 다시 시도해주세요</div>';
       });
   }
 
@@ -611,13 +599,13 @@
         ? coin.current_price.toLocaleString('en-US', { maximumFractionDigits: 2 })
         : coin.current_price < 1 ? coin.current_price.toFixed(4) : coin.current_price.toFixed(2);
       html += '<div onclick="window.open(\'https://www.tradingview.com/chart/?symbol=' + coin.symbol.toUpperCase() + 'USDT\', \'_blank\')" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:8px;">'
-        + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:11px;color:var(--text-dim);width:20px;">' + (i + 1) + '</div>'
+        + '<div style="font-family:\'Pretendard\',monospace;font-size:11px;color:var(--text-dim);width:20px;">' + (i + 1) + '</div>'
         + '<img src="' + coin.image + '" style="width:24px;height:24px;border-radius:50%;">'
         + '<div style="flex:1;">'
         + '<div style="font-size:14px;font-weight:700;">' + coin.symbol.toUpperCase() + '</div>'
-        + '<div style="font-size:11px;color:var(--text-dim);font-family:\'JetBrains Mono\',monospace;">$' + priceStr + '</div>'
+        + '<div style="font-size:11px;color:var(--text-dim);font-family:\'Pretendard\',monospace;">$' + priceStr + '</div>'
         + '</div>'
-        + '<div style="font-family:\'JetBrains Mono\',monospace;font-size:13px;color:' + (isUp ? '#00c864' : '#e24b4a') + ';">'
+        + '<div style="font-family:\'Pretendard\',monospace;font-size:13px;color:' + (isUp ? '#D24F4F' : '#4B8DD4') + ';">'
         + (isUp ? '▲' : '▼') + ' ' + Math.abs(change).toFixed(2) + '%</div>'
         + '</div>';
     });
